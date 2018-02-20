@@ -13,7 +13,7 @@ $ cabal update
 $ cabal install pandoc
 $ PATH=~/.cabal/bin:$PATH            # Linux
 $ PATH=~/Library/Haskell/bin:$PATH   # OS X
-$ git clone git://github.com/mbenke/zpf2017.git
+$ git clone git://github.com/mbenke/zpf2018.git
 $ cd zpf2018/Slides
 $ make
 ~~~~~
