@@ -1,0 +1,775 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Marcin Benke" />
+  <title>Zaawansowane programowanie funkcyjne</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #0000ff; } /* Keyword */
+code > span.ch { color: #008080; } /* Char */
+code > span.st { color: #008080; } /* String */
+code > span.co { color: #008000; } /* Comment */
+code > span.ot { color: #ff4000; } /* Other */
+code > span.al { color: #ff0000; } /* Alert */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #008000; font-weight: bold; } /* Warning */
+code > span.cn { } /* Constant */
+code > span.sc { color: #008080; } /* SpecialChar */
+code > span.vs { color: #008080; } /* VerbatimString */
+code > span.ss { color: #008080; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #0000ff; } /* ControlFlow */
+code > span.op { } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ff4000; } /* Preprocessor */
+code > span.do { color: #008000; } /* Documentation */
+code > span.an { color: #008000; } /* Annotation */
+code > span.cv { color: #008000; } /* CommentVar */
+code > span.at { } /* Attribute */
+code > span.in { color: #008000; } /* Information */
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">Zaawansowane programowanie funkcyjne</h1>
+  <p class="author">
+Marcin Benke
+  </p>
+  <p class="date">27 lutego 2018</p>
+</div>
+<div class="slide section level1">
+
+<p><meta name="duration" content="80" /></p>
+</div>
+<div id="plan-wykładu" class="slide section level1">
+<h1>Plan wykładu</h1>
+<ul>
+<li>Typy i klasy
+<ul>
+<li>Typy algebraiczne i klasy typów</li>
+<li>Klasy konstruktorowe</li>
+<li>Klasy wieloparametrowe, zależności funkcyjne</li>
+</ul></li>
+<li>Testowanie (QuickCheck)</li>
+<li>Typy zależne, Agda, Idris, Coq, dowodzenie własności (ok. 7 wykladów)</li>
+<li>Typy zależne w Haskellu
+<ul>
+<li>Rodziny typów, typy skojarzone, uogólnione typy algebraiczne (GADT)</li>
+<li>data kinds, kind polymorphism</li>
+</ul></li>
+<li>Metaprogramowanie</li>
+<li>Programowanie równoległe i współbieżne w Haskellu
+<ul>
+<li>Programowanie wielordzeniowe i wieloprocesorowe (SMP)</li>
+<li>Równoległość danych (Data Parallel Haskell)</li>
+</ul></li>
+<li>Erlang - programowanie współbieżne i rozproszone</li>
+<li>Prezentacje projektów</li>
+</ul>
+<p>Jakieś życzenia?</p>
+</div>
+<div id="zasady-zaliczania" class="slide section level1">
+<h1>Zasady zaliczania</h1>
+<ul>
+<li>Laboratorium: zdefiniowane zadanie Coq + <strong>prosty</strong> projekt 1-3 osobowy - Haskell</li>
+<li>Egzamin ustny, którego istotną częścią jest prezentacja projektu.</li>
+<li>Alternatywna forma zaliczenia: referat (koniecznie ciekawy!)</li>
+<li>...możliwe także inne formy.</li>
+</ul>
+</div>
+<div id="materiały" class="slide section level1">
+<h1>Materiały</h1>
+<pre><code>$ cabal update
+$ cabal install pandoc
+$ PATH=~/.cabal/bin:$PATH            # Linux
+$ PATH=~/Library/Haskell/bin:$PATH   # OS X
+$ git clone git://github.com/mbenke/zpf2018.git
+$ cd zpf2018/Slides
+$ make</code></pre>
+<p>albo, przy użyciu stack</p>
+<pre><code>stack setup
+stack install pandoc
+export PATH=$(stack path --local-bin):$PATH
+...</code></pre>
+</div>
+<div id="dygresja---cabal-i-stack" class="slide section level1">
+<h1>Dygresja - cabal i stack</h1>
+<p><strong>Common Architecture for Building Applications and Libraries</strong></p>
+<p><code>cabal install</code> - pozwala instalować biblioteki na swoim koncie, bez uprawnień administratora</p>
+<pre><code>[ben@students Haskell]$ cabal update
+Downloading the latest package list 
+  from hackage.haskell.org
+[ben@students Haskell]$ cabal install GLFW
+...kompilacja...
+Installing library in 
+ /home/staff/iinf/ben/.cabal/lib/GLFW-0.4.2/ghc-6.10.4
+Registering GLFW-0.4.2...
+Reading package info from &quot;dist/installed-pkg-config&quot; 
+ ... done.
+Writing new package config file... done.</code></pre>
+<p>Wiele bibliotek na <code>http://hackage.haskell.org/</code></p>
+</div>
+<div id="cabal-hell" class="slide section level1">
+<h1>Cabal hell</h1>
+<pre><code>$ cabal install criterion
+Resolving dependencies...
+In order, the following would be installed:
+monad-par-extras-0.3.3 (reinstall) changes: mtl-2.1.2 -&gt; 2.2.1,
+transformers-0.3.0.0 -&gt; 0.5.2.0
+nats-1.1.1 (reinstall) changes: hashable-1.1.2.5 -&gt; 1.2.5.0
+...
+criterion-1.1.4.0 (new package)
+cabal: The following packages are likely to be broken by the reinstalls:
+monad-par-0.3.4.7
+void-0.7.1
+lens-4.15.1
+...
+HTTP-4000.3.3
+Use --force-reinstalls if you want to install anyway.</code></pre>
+</div>
+<div id="stack-stackage" class="slide section level1">
+<h1>Stack + stackage</h1>
+<blockquote>
+<p>Stackage is a stable source of Haskell packages. We guarantee that packages build consistently and pass tests before generating nightly and Long Term Support (LTS) releases.</p>
+</blockquote>
+<pre><code>LTS 10.5 for GHC 8.2.2, published a week ago
+LTS 9.21 for GHC 8.0.2, published a month ago
+LTS 7.24 for GHC 8.0.1, published 9 months ago
+LTS 6.35 for GHC 7.10.3, published 9 months ago
+LTS 3.22 for GHC 7.10.2, published 2 years ago
+LTS 2.22 for GHC 7.8.4, published 3 years ago
+LTS 0.7 for GHC 7.8.3, published 3 years ago</code></pre>
+<pre><code>$ stack --resolver lts-3.22 install criterion
+Run from outside a project, using implicit global project config
+Using resolver: lts-3.22 specified on command line
+Downloaded lts-3.22 build plan.    
+mtl-2.2.1: using precompiled package
+...
+criterion-1.1.0.0: download
+criterion-1.1.0.0: configure
+criterion-1.1.0.0: build
+criterion-1.1.0.0: copy/register
+</code></pre>
+</div>
+<div id="budowanie-projektu" class="slide section level1">
+<h1>Budowanie projektu</h1>
+<pre><code>$ stack new hello &amp;&amp; cd hello
+Downloading template &quot;new-template&quot; to create project &quot;hello&quot; in hello/ ...
+
+Selected resolver: lts-8.5
+Initialising configuration using resolver: lts-8.5
+Total number of user packages considered: 1
+Writing configuration to file: hello/stack.yaml
+All done.
+$ stack build
+Warning: File listed in hello.cabal file does not exist: README.md
+hello-0.1.0.0: configure (lib + exe)
+...
+hello-0.1.0.0: copy/register
+Installing library in
+/Users/marcin/tmp/hello/.stack-work/install/x86_64-osx/lts-8.5/8.0.2/lib/x86_64-osx-ghc-8.0.2/hello-0.1.0.0-KwseWZXCZph1LcfBbJuRhm
+Installing executable(s) in
+/Users/marcin/tmp/hello/.stack-work/install/x86_64-osx/lts-8.5/8.0.2/bin
+Registering hello-0.1.0.0...
+$ stack exec hello-exe
+someFunc</code></pre>
+<p>Na students to może nie zadziałać, ale można użyć zainstalowanego już ghc (patrz np. w <code>PUBLIC/MRJP</code>:</p>
+<pre><code>[ben@students Stack]$ ghc --version
+The Glorious Glasgow Haskell Compilation System, version 7.10.3
+[ben@students Stack]$ stack --resolver lts-6.35 new hello &amp;&amp; cd hello
+...
+Selected resolver: lts-6.35
+Initialising configuration using resolver: lts-6.35
+Total number of user packages considered: 1
+Writing configuration to file: hello/stack.yaml
+All done.
+[ben@students hello]$ stack build --system-ghc
+[1 of 2] Compiling Main             ( /home/staff/iinf/ben/.stack/setup-exe-src/setup-mPHDZzAJ.hs, /home/staff/iinf/ben/.stack/setup-exe-src/setup-mPHDZzAJ.o )
+[2 of 2] Compiling StackSetupShim   ( /home/staff/iinf/ben/.stack/setup-exe-src/setup-shim-mPHDZzAJ.hs, /home/staff/iinf/ben/.stack/setup-exe-src/setup-shim-mPHDZzAJ.o )
+Linking /home/staff/iinf/ben/.stack/setup-exe-cache/x86_64-linux/tmp-Cabal-simple_mPHDZzAJ_1.22.5.0_ghc-7.10.3 ...
+Building all executables for `hello&#39; once. After a successful build of all of them, only specified executables will be rebuilt.
+hello-0.1.0.0: configure (lib + exe)
+Configuring hello-0.1.0.0...
+hello-0.1.0.0: build (lib + exe)
+Preprocessing library hello-0.1.0.0...
+[1 of 2] Compiling Paths_hello      ( .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/autogen/Paths_hello.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Paths_hello.o )
+[2 of 2] Compiling Lib              ( src/Lib.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/Lib.o )
+In-place registering hello-0.1.0.0...
+Preprocessing executable &#39;hello-exe&#39; for hello-0.1.0.0...
+[1 of 1] Compiling Main             ( app/Main.hs, .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/hello-exe/hello-exe-tmp/Main.o )
+Linking .stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/hello-exe/hello-exe ...
+hello-0.1.0.0: copy/register
+Installing library in
+/home/staff/iinf/ben/tmp/Stack/hello/.stack-work/install/x86_64-linux/lts-6.35/7.10.3/lib/x86_64-linux-ghc-7.10.3/hello-0.1.0.0-IJIUuynUbgsHAquBKsAsb5
+Installing executable(s) in
+/home/staff/iinf/ben/tmp/Stack/hello/.stack-work/install/x86_64-linux/lts-6.35/7.10.3/bin
+Registering hello-0.1.0.0...</code></pre>
+</div>
+<div id="stack---ćwiczenia" class="slide section level1">
+<h1>Stack - ćwiczenia</h1>
+<ol style="list-style-type: decimal">
+<li>Na własnym komputerze
+<ul>
+<li>Zainstalować <code>stack</code></li>
+<li>Zainstalować GHC 7.10 przy pomocy <code>stack setup</code></li>
+<li>Zainstalować GHC 8 przy pomocy <code>stack setup</code></li>
+<li>Uruchomić <code>stack ghci</code> 7.10 i 8</li>
+<li>Zbudować i uruchomić projekt hello, trochę go zmodyfikować</li>
+</ul></li>
+<li>Na students</li>
+</ol>
+<ul>
+<li>Można zrobić to samo co powyżej, ale możliwy problem z quota</li>
+<li><code>stack setup</code> przy użyciu GHC 7.10 (i może 7.8) z PUBLIC</li>
+<li>Reszta jak wyżej</li>
+</ul>
+</div>
+<div id="języki-funkcyjne" class="slide section level1">
+<h1>Języki funkcyjne</h1>
+<ul>
+<li>typowane dynamicznie, gorliwe: Lisp</li>
+<li>typowane statycznie, gorliwe, nieczyste: ML</li>
+<li>typowane statycznie, leniwe, czyste: Haskell</li>
+</ul>
+<p>Ten wykład: Haskell, ze szczególnym naciskiem na typy.</p>
+<p>Bogata struktura typów jest tym, co wyróżnia Haskell wśród innych języków.</p>
+</div>
+<div id="typy-jako-język-specyfikacji" class="slide section level1">
+<h1>Typy jako język specyfikacji</h1>
+<p>Typ funkcji często specyfikuje nie tylko jej wejście i wyjście ale i relacje między nimi:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">f ::</span> forall a<span class="fu">.</span> a <span class="ot">-&gt;</span> a
+f x <span class="fu">=</span> <span class="fu">?</span></code></pre></div>
+<p>Jeśli <code>(f x)</code> daje wynik, to musi nim być <code>x</code></p>
+<ul>
+<li><p>Philip Wadler &quot;Theorems for Free&quot;</p></li>
+<li><p>Funkcja typu <code>a -&gt; IO b</code> może mieć efekty uboczne</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Data.IORef</span>
+
+<span class="ot">f ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IORef</span> <span class="dt">Int</span>)
+f i <span class="fu">=</span> <span class="kw">do</span>
+  print i
+  r <span class="ot">&lt;-</span> newIORef i
+  return r
+
+main <span class="fu">=</span> <span class="kw">do</span>
+  r <span class="ot">&lt;-</span> f <span class="dv">42</span>
+  j <span class="ot">&lt;-</span> readIORef r
+  print j    </code></pre></div></li>
+</ul>
+</div>
+<div id="typy-jako-język-specyfikacji-2" class="slide section level1">
+<h1>Typy jako język specyfikacji (2)</h1>
+<p>Funkcja typu <code>Integer -&gt; Integer</code> zasadniczo nie może mieć efektów ubocznych</p>
+<p>Liczby Fibonacciego w stałej pamięci</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Control.Monad.ST</span>
+<span class="kw">import </span><span class="dt">Data.STRef</span>
+<span class="ot">fibST ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+fibST n <span class="fu">=</span> 
+    <span class="kw">if</span> n <span class="fu">&lt;</span> <span class="dv">2</span> <span class="kw">then</span> n <span class="kw">else</span> runST fib2 <span class="kw">where</span>
+      fib2 <span class="fu">=</span>  <span class="kw">do</span>
+        x <span class="ot">&lt;-</span> newSTRef <span class="dv">0</span>
+        y <span class="ot">&lt;-</span> newSTRef <span class="dv">1</span>
+        fib3 n x y
+ 
+      fib3 <span class="dv">0</span> x _ <span class="fu">=</span> readSTRef x
+      fib3 n x y <span class="fu">=</span> <span class="kw">do</span>
+              x&#39; <span class="ot">&lt;-</span> readSTRef x
+              y&#39; <span class="ot">&lt;-</span> readSTRef y
+              writeSTRef x y&#39;
+              writeSTRef y (x&#39;<span class="fu">+</span>y&#39;)
+              fib3 (n<span class="fu">-</span><span class="dv">1</span>) x y</code></pre></div>
+<p>Jak to?</p>
+<pre><code>runST :: (forall s. ST s a) -&gt; a</code></pre>
+<p>Typ <code>runST</code> gwarantuje, że efekty uboczne nie wyciekają. Funkcja <code>fibST</code> jest czysta.</p>
+</div>
+<div id="typy-jako-język-projektowania" class="slide section level1">
+<h1>Typy jako język projektowania</h1>
+<ul>
+<li><p>Projektowanie programu przy użyciu typów i <code>undefined</code></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">conquer ::</span> [<span class="dt">Foo</span>] <span class="ot">-&gt;</span> [<span class="dt">Bar</span>]
+conquer fs <span class="fu">=</span> concatMap step fs
+
+<span class="ot">step ::</span> <span class="dt">Foo</span> <span class="ot">-&gt;</span> [<span class="dt">Bar</span>]
+step <span class="fu">=</span> undefined</code></pre></div></li>
+</ul>
+</div>
+<div id="typy-jako-język-programowania" class="slide section level1">
+<h1>Typy jako język programowania</h1>
+<ul>
+<li><p>Funkcje na typach obliczane w czasie kompilacji</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Zero</span>
+<span class="kw">data</span> <span class="dt">Succ</span> n
+
+<span class="kw">type</span> <span class="dt">One</span>   <span class="fu">=</span> <span class="dt">Succ</span> <span class="dt">Zero</span>
+<span class="kw">type</span> <span class="dt">Two</span>   <span class="fu">=</span> <span class="dt">Succ</span> <span class="dt">One</span>
+<span class="kw">type</span> <span class="dt">Three</span> <span class="fu">=</span> <span class="dt">Succ</span> <span class="dt">Two</span>
+<span class="kw">type</span> <span class="dt">Four</span>  <span class="fu">=</span> <span class="dt">Succ</span> <span class="dt">Three</span>
+
+one   <span class="fu">=</span><span class="ot"> undefined ::</span> <span class="dt">One</span>
+two   <span class="fu">=</span><span class="ot"> undefined ::</span> <span class="dt">Two</span>
+three <span class="fu">=</span><span class="ot"> undefined ::</span> <span class="dt">Three</span>
+four  <span class="fu">=</span><span class="ot"> undefined ::</span> <span class="dt">Four</span>
+
+<span class="kw">class</span> <span class="dt">Add</span> a b c <span class="fu">|</span> a b <span class="ot">-&gt;</span> c <span class="kw">where</span>
+<span class="ot">  add ::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c
+  add <span class="fu">=</span> undefined
+<span class="kw">instance</span>              <span class="dt">Add</span>  <span class="dt">Zero</span>    b  b
+<span class="kw">instance</span> <span class="dt">Add</span> a b c <span class="ot">=&gt;</span> <span class="dt">Add</span> (<span class="dt">Succ</span> a) b (<span class="dt">Succ</span> c)</code></pre></div>
+<pre><code>*Main&gt; :t add three one
+add three one :: Succ (Succ (Succ (Succ Zero)))</code></pre></li>
+<li><p>Ćwiczenie: rozszerzyć o mnożenie i silnię</p></li>
+</ul>
+</div>
+<div id="typy-jako-język-programowania-2" class="slide section level1">
+<h1>Typy jako język programowania (2)</h1>
+<p>Wektory przy użyciu klas:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Vec</span><span class="ot"> ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
+  <span class="dt">VNil</span><span class="ot"> ::</span> <span class="dt">Vec</span> <span class="dt">Zero</span> a  
+<span class="ot">  (:&gt;) ::</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> n a <span class="ot">-&gt;</span> <span class="dt">Vec</span> (<span class="dt">Succ</span> n) a
+
+<span class="ot">vhead ::</span> <span class="dt">Vec</span> (<span class="dt">Succ</span> n) a <span class="ot">-&gt;</span> a
+vhead (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> x</code></pre></div>
+<p><strong>Ćwiczenie:</strong> dopisać <code>vtail</code>, <code>vlast</code></p>
+<p>Chcielibyśmy również mieć</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">vappend ::</span> <span class="dt">Add</span> m n s <span class="ot">=&gt;</span> <span class="dt">Vec</span> m a <span class="ot">-&gt;</span> <span class="dt">Vec</span> n a <span class="ot">-&gt;</span> <span class="dt">Vec</span> s a</code></pre></div>
+<p>ale tu niestety podstawowy system typów okazuje się za słaby --- więcej za tydzień</p>
+</div>
+<div id="typy-jako-język-programowania-3" class="slide section level1">
+<h1>Typy jako język programowania (3)</h1>
+<ul>
+<li><p>Wektory przy użyciu rodzin typów:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Zero</span> <span class="fu">=</span> <span class="dt">Zero</span>
+<span class="kw">data</span> <span class="dt">Suc</span> n <span class="fu">=</span> <span class="dt">Suc</span> n
+
+<span class="kw">type</span> family m <span class="fu">:+</span> n
+<span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Zero</span> <span class="fu">:+</span> n <span class="fu">=</span> n
+<span class="kw">type</span> <span class="kw">instance</span> (<span class="dt">Suc</span> m) <span class="fu">:+</span> n <span class="fu">=</span> <span class="dt">Suc</span>(m<span class="fu">:+</span>n)
+
+<span class="kw">data</span> <span class="dt">Vec</span><span class="ot"> ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
+  <span class="dt">VNil</span><span class="ot"> ::</span> <span class="dt">Vec</span> <span class="dt">Zero</span> a  
+<span class="ot">  (:&gt;) ::</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> n a <span class="ot">-&gt;</span> <span class="dt">Vec</span> (<span class="dt">Suc</span> n) a
+
+<span class="ot">vhead ::</span> <span class="dt">Vec</span> (<span class="dt">Suc</span> n) a <span class="ot">-&gt;</span> a
+<span class="ot">vappend ::</span> <span class="dt">Vec</span> m a <span class="ot">-&gt;</span> <span class="dt">Vec</span> n a <span class="ot">-&gt;</span> <span class="dt">Vec</span> (m<span class="fu">:+</span>n) a</code></pre></div></li>
+</ul>
+</div>
+<div id="typy-zależne" class="slide section level1">
+<h1>Typy zależne</h1>
+<p>Prawdziwe programowanie na poziomie typów i dowodzenie własności programów możliwe w języku z typami zależnymi, takim jak Agda, Epigram, Idris</p>
+<pre><code>module Data.Vec where
+infixr 5 _∷_
+
+data Vec (A : Set a) : ℕ → Set where
+  []  : Vec A zero
+  _∷_ : ∀ {n} (x : A) (xs : Vec A n) → Vec A (suc n)
+
+_++_ : ∀ {a m n} {A : Set a} → Vec A m → Vec A n → Vec A (m + n)
+[]       ++ ys = ys
+(x ∷ xs) ++ ys = x ∷ (xs ++ ys)
+
+module UsingVectorEquality {s₁ s₂} (S : Setoid s₁ s₂) where
+  xs++[]=xs : ∀ {n} (xs : Vec A n) → xs ++ [] ≈ xs
+  xs++[]=xs []       = []-cong
+  xs++[]=xs (x ∷ xs) = SS.refl ∷-cong xs++[]=xs xs</code></pre>
+</div>
+<div id="problem-z-typami-zależnymi" class="slide section level1">
+<h1>Problem z typami zależnymi</h1>
+<p>O ile Haskell bywa czasami nieczytelny, to z typami zależnymi całkiem łatwo przesadzić:</p>
+<pre><code>  now-or-never : Reflexive _∼_ →
+                 ∀ {k} (x : A ⊥) →
+                 ¬ ¬ ((∃ λ y → x ⇓[ other k ] y) ⊎ x ⇑[ other k ])
+  now-or-never refl x = helper &lt;$&gt; excluded-middle
+    where
+    open RawMonad ¬¬-Monad
+
+    not-now-is-never : (x : A ⊥) → (∄ λ y → x ≳ now y) → x ≳ never
+    not-now-is-never (now x)   hyp with hyp (, now refl)
+    ... | ()
+    not-now-is-never (later x) hyp =
+      later (♯ not-now-is-never (♭ x) (hyp ∘ Prod.map id laterˡ))
+
+    helper : Dec (∃ λ y → x ≳ now y) → _
+    helper (yes ≳now) = inj₁ $ Prod.map id ≳⇒ ≳now
+    helper (no  ≵now) = inj₂ $ ≳⇒ $ not-now-is-never x ≵now</code></pre>
+<p>...chociaż oczywiście pisanie takich dowodów jest świetną zabawą.</p>
+</div>
+<div id="data-parallel-haskell" class="slide section level1">
+<h1>Data Parallel Haskell</h1>
+<p>Dokąd chcemy dojść:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE ParallelArrays #-}</span>
+<span class="ot">{-# OPTIONS_GHC -fvectorise #-}</span>
+
+<span class="kw">module</span> <span class="dt">DotP</span> <span class="kw">where</span>
+<span class="kw">import qualified</span> <span class="dt">Prelude</span>
+<span class="kw">import </span><span class="dt">Data.Array.Parallel</span>
+<span class="kw">import </span><span class="dt">Data.Array.Parallel.Prelude</span>
+<span class="kw">import </span><span class="dt">Data.Array.Parallel.Prelude.Double</span> <span class="kw">as</span> <span class="dt">D</span>
+
+<span class="ot">dotp_double ::</span> [<span class="fu">:</span><span class="dt">Double</span><span class="fu">:</span>] <span class="ot">-&gt;</span> [<span class="fu">:</span><span class="dt">Double</span><span class="fu">:</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span>
+dotp_double xs ys <span class="fu">=</span> D.sumP [<span class="fu">:</span>x <span class="fu">*</span> y <span class="fu">|</span> x <span class="ot">&lt;-</span> xs <span class="fu">|</span> y <span class="ot">&lt;-</span> ys<span class="fu">:</span>]</code></pre></div>
+<p>Wygląda jak operacja na listach, ale działa na tablicach i &quot;automagicznie&quot; zrównolegla się na dowolną liczbę rdzeni/procesorów (także CUDA).</p>
+<p>Po drodze czeka nas jednak trochę pracy.</p>
+</div>
+<div id="typy-w-haskellu" class="slide section level1">
+<h1>Typy w Haskellu</h1>
+<ul>
+<li>typy bazowe: <code>zeroInt :: Int</code></li>
+<li>typy funkcyjne: <code>plusInt :: Int -&gt; Int -&gt; Int</code></li>
+<li><p>typy polimorficzne <code>id :: a -&gt; a</code></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE ExplicitForAll #-}</span>
+<span class="ot">g ::</span> forall b<span class="fu">.</span>b <span class="ot">-&gt;</span> b</code></pre></div></li>
+<li><p>typy algebraiczne</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Tree</span> a <span class="fu">=</span> <span class="dt">Leaf</span> <span class="fu">|</span> <span class="dt">Node</span> a (<span class="dt">Tree</span> a) (<span class="dt">Tree</span> a)</code></pre></div></li>
+<li><p><code>Leaf</code> i <code>Node</code> są konstruktorami wartości:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Tree</span> a <span class="kw">where</span>
+     <span class="dt">Leaf</span><span class="ot"> ::</span> <span class="dt">Tree</span> a
+     <span class="dt">Node</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</code></pre></div></li>
+<li><p><code>Tree</code> jest <em>konstruktorem typowym</em>, czyli operacją na typach</p></li>
+<li><p>NB od niedawna Haskell dopuszcza puste typy:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Zero</span></code></pre></div></li>
+</ul>
+</div>
+<div id="typowanie-polimorficzne" class="slide section level1">
+<h1>Typowanie polimorficzne</h1>
+<ul>
+<li>Generalizacja:</li>
+</ul>
+<p><span class="math display">\[{\Gamma \vdash e :: t, a \notin FV( \Gamma )}\over {\Gamma \vdash e :: \forall a.t}\]</span></p>
+<p><!-- 
+Jeśli $\Gamma \vdash e :: t, a \notin FV( \Gamma )$
+ 
+to $\Gamma \vdash e :: \forall a.t$
+
+  Γ ⊢ e :: t, a∉FV(Γ)
+$$\Gamma \vdash e :: t$$ ,
+ \(a \not\in FV(\Gamma) \) , 
+to $\Gamma \vdash e :: \forall a.t$
+--></p>
+<p>Na przykład</p>
+<p><span class="math display">\[{ { \vdash map :: (a\to b) \to [a] \to [b] } \over
+   { \vdash map :: \forall b. (a\to b) \to [a] \to [b] } } \over
+   { \vdash map :: \forall a. \forall b. (a\to b) \to [a] \to [b] } \]</span></p>
+<p>Uwaga:</p>
+<p><span class="math display">\[ f : a \to b \not \vdash map\; f :: \forall b. [a] \to [b]  \]</span></p>
+<ul>
+<li>Instancjacja</li>
+</ul>
+<p><span class="math display">\[ {\Gamma \vdash e :: \forall a.t}\over {\Gamma \vdash e :: t[a:=s]} \]</span></p>
+</div>
+<div id="klasy" class="slide section level1">
+<h1>Klasy</h1>
+<ul>
+<li><p>klasy opisują własności typów</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span>
+<span class="ot">  (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+<span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Bool</span> <span class="kw">where</span>
+   <span class="dt">True</span>  <span class="fu">==</span> <span class="dt">True</span>  <span class="fu">=</span> <span class="dt">True</span>
+   <span class="dt">False</span> <span class="fu">==</span> <span class="dt">False</span> <span class="fu">=</span> <span class="dt">True</span>
+   _     <span class="fu">==</span> _     <span class="fu">=</span> <span class="dt">False</span>
+
+<span class="kw">class</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">Ord</span> a <span class="kw">where</span> <span class="fu">...</span></code></pre></div></li>
+<li><p>funkcje mogą być definiowane w kontekście klas:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">elem<span class="ot"> ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span></code></pre></div></li>
+<li>Implementacja
+<ul>
+<li>instancja tłumaczona na słownik metod (coś 'a la vtable w C++)</li>
+<li>kontekst (np Eq a) jest tłumaczony na ukryty parametr (słownik metod )</li>
+<li>podklasa tłumaczona na funkcję</li>
+</ul></li>
+</ul>
+</div>
+<div id="operacje-na-typach" class="slide section level1">
+<h1>Operacje na typach</h1>
+<ul>
+<li><p>Prosty przykład:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Tree</span> a <span class="fu">=</span> <span class="dt">Leaf</span> <span class="fu">|</span> <span class="dt">Node</span> a (<span class="dt">Tree</span> a) (<span class="dt">Tree</span> a)</code></pre></div></li>
+<li><p>Konstruktory typowe transformują typy</p></li>
+<li><p><code>Tree</code> może zamienić np. <code>Int</code> w drzewo</p></li>
+<li><p>Funkcje wyższego rzędu transformują funkcje</p></li>
+<li><p>Konstruktory wyższego rzędu transformują konstruktory typów</p></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">IdentityT</span> m a <span class="fu">=</span> <span class="dt">IdentityT</span> {<span class="ot"> runIdentityT ::</span> m a }</code></pre></div>
+</div>
+<div id="klasy-konstruktorowe" class="slide section level1">
+<h1>Klasy konstruktorowe</h1>
+<ul>
+<li><p>klasy konstruktorowe opisują własności konstruktorów typów:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Functor</span> f <span class="kw">where</span>
+<span class="ot">  fmap ::</span> (a<span class="ot">-&gt;</span>b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b
+(<span class="fu">&lt;$&gt;</span>) <span class="fu">=</span> fmap
+
+<span class="kw">instance</span> <span class="dt">Functor</span> [] <span class="kw">where</span>
+  fmap <span class="fu">=</span> map
+
+<span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Pointed</span> f <span class="kw">where</span>
+<span class="ot">   pure ::</span> a <span class="ot">-&gt;</span> f a
+<span class="kw">instance</span> <span class="dt">Pointed</span> [] <span class="kw">where</span>
+   pure <span class="fu">=</span> (<span class="fu">:</span>[])
+
+<span class="kw">class</span> <span class="dt">Pointed</span> f <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="kw">where</span>
+<span class="ot">  (&lt;*&gt;) ::</span> f(a<span class="ot">-&gt;</span>b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b 
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> [] <span class="kw">where</span>
+  fs <span class="fu">&lt;*&gt;</span> xs <span class="fu">=</span> concat <span class="fu">$</span> flip map fs (flip map xs)
+
+<span class="kw">class</span> <span class="dt">Applicative</span> m <span class="ot">=&gt;</span> <span class="dt">Monad&#39;</span> m <span class="kw">where</span>
+<span class="ot">  (&gt;&gt;=) ::</span> m a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m b</code></pre></div></li>
+</ul>
+<!-- 
+
+    class Pointed f => Applicative f where
+      (<*>) :: f(a->b) -> f a -> f b 
+      (*>) :: f a -> f b -> f b
+      x *> y = (flip const) <$> x <*> y
+      (<*) :: f a -> f b -> f a
+      x <* y = const <$> x <*> y
+
+    liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
+    liftA2 f a b = f <$> a <*> b
+
+-->
+</div>
+<div id="rodzaje-kinds" class="slide section level1">
+<h1>Rodzaje (kinds)</h1>
+<ul>
+<li><p>Operacje na wartościach są opisywane przez ich typy</p></li>
+<li><p>Operacje na typach są opisywane przez ich rodzaje (kinds)</p></li>
+<li><p>Typy (np. <code>Int</code>) są rodzaju <code>*</code></p></li>
+<li><p>Jednoargumentowe konstruktory (np. <code>Tree</code>) są rodzaju <code>* -&gt; *</code></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-#LANGUAGE KindSignatures, ExplicitForAll #-}</span>
+
+<span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Pointed</span> (<span class="ot">f ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span>) <span class="kw">where</span>
+<span class="ot">    pure ::</span> forall (<span class="ot">a ::</span> <span class="fu">*</span>)<span class="fu">.</span>a <span class="ot">-&gt;</span> f a</code></pre></div></li>
+<li><p>Występują też bardziej złożone rodzaje, np. dla transformatorów monad:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">MonadTrans</span> (<span class="ot">t ::</span> (<span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span>) <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span>) <span class="kw">where</span>
+<span class="ot">    lift ::</span> <span class="dt">Monad</span> (<span class="ot">m ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span>) <span class="ot">=&gt;</span> forall (<span class="ot">a ::</span> <span class="fu">*</span>)<span class="fu">.</span>m a <span class="ot">-&gt;</span> t m a</code></pre></div></li>
+</ul>
+<p>NB spacje są niezbędne - <code>::*-&gt;*</code> jest jednym leksemem.</p>
+</div>
+<div id="klasy-wieloparametrowe" class="slide section level1">
+<h1>Klasy wieloparametrowe</h1>
+<ul>
+<li><p>Czasami potrzebujemy opisać nie tyle pojedynczy typ, co relacje między typami:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-#LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}</span>
+<span class="kw">class</span> <span class="dt">Iso</span> a b <span class="kw">where</span>
+<span class="ot">  iso ::</span> a <span class="ot">-&gt;</span> b
+<span class="ot">  osi ::</span> b <span class="ot">-&gt;</span> a
+
+<span class="kw">instance</span> <span class="dt">Iso</span> a a <span class="kw">where</span>
+  iso <span class="fu">=</span> id
+  osi <span class="fu">=</span> id
+
+<span class="kw">instance</span> <span class="dt">Iso</span> ((a,b)<span class="ot">-&gt;</span>c) (a<span class="ot">-&gt;</span>b<span class="ot">-&gt;</span>c) <span class="kw">where</span>
+  iso <span class="fu">=</span> curry
+  osi <span class="fu">=</span> uncurry
+
+<span class="kw">instance</span> (<span class="dt">Iso</span> a b) <span class="ot">=&gt;</span> <span class="dt">Iso</span> [a] [b] <span class="kw">where</span>
+ iso <span class="fu">=</span> map iso
+ osi <span class="fu">=</span> map osi</code></pre></div></li>
+<li><p>Uwaga: w ostatnim przykładzie <code>iso</code> ma inny typ po lewej, inny po prawej</p></li>
+<li><p>Ćwiczenie: napisz jeszcze jakieś instancje klasy <code>Iso</code></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> (<span class="dt">Functor</span> f, <span class="dt">Iso</span> a b) <span class="ot">=&gt;</span> <span class="dt">Iso</span> (f a) (f b) <span class="kw">where</span> 
+<span class="kw">instance</span> <span class="dt">Iso</span> (a<span class="ot">-&gt;</span>b<span class="ot">-&gt;</span>c) (b<span class="ot">-&gt;</span>a<span class="ot">-&gt;</span>c) <span class="kw">where</span></code></pre></div></li>
+</ul>
+</div>
+<div id="dygresja---flexibleinstances" class="slide section level1">
+<h1>Dygresja - FlexibleInstances</h1>
+<p>Haskell 2010</p>
+<!--
+An instance declaration introduces an instance of a class. Let class
+cx => C u where { cbody } be a class declaration. The general form of
+the corresponding instance declaration is: instance cx′ => C (T u1 …
+uk) where { d } where k ≥ 0. The type (T u1 … uk) must take the form
+of a type constructor T applied to simple type variables u1, … uk;
+furthermore, T must not be a type synonym, and the ui must all be
+distinct.
+-->
+<ul>
+<li>an instance head must have the form C (T u1 ... uk), where T is a type constructor defined by a data or newtype declaration and the ui are distinct type variables, and</li>
+</ul>
+<!--
+*    each assertion in the context must have the form C' v, where v is one of the ui. 
+-->
+<p>This prohibits instance declarations such as:</p>
+<p>instance C (a,a) where ...<br />
+instance C (Int,a) where ...<br />
+instance C [[a]] where ...</p>
+<p><code>instance Iso a a</code> nie spełnia tych warunków, ale wiadomo o jaką relację nam chodzi :)</p>
+</div>
+<div id="problem-z-klasami-wieloparametrowymi" class="slide section level1">
+<h1>Problem z klasami wieloparametrowymi</h1>
+<p>Spróbujmy stworzyć klasę kolekcji, np.</p>
+<p><code>BadCollection.hs</code></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Collection</span> c <span class="kw">where</span>
+<span class="ot">  insert ::</span> e <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> c    
+<span class="ot">  member ::</span> e <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="kw">instance</span> <span class="dt">Collection</span> [a] <span class="kw">where</span>
+     insert <span class="fu">=</span> (<span class="fu">:</span>)
+     member <span class="fu">=</span> elem  </code></pre></div>
+<pre><code>    Couldn&#39;t match type `e&#39; with `a&#39;
+      `e&#39; is a rigid type variable bound by
+          the type signature for member :: e -&gt; [a] -&gt; Bool
+          at BadCollection.hs:7:6
+      `a&#39; is a rigid type variable bound by
+          the instance declaration
+          at BadCollection.hs:5:22</code></pre>
+<p>Dlaczego?</p>
+</div>
+<div id="problem-z-klasami-wieloparametrowymi-1" class="slide section level1">
+<h1>Problem z klasami wieloparametrowymi</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Collection</span> c <span class="kw">where</span>
+<span class="ot"> insert ::</span> e <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> c    
+<span class="ot"> member ::</span> e <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> <span class="dt">Bool</span></code></pre></div>
+<p>tłumaczy się (mniej więcej) do</p>
+<pre><code>data ColDic c = CD 
+ { 
+ , insert :: forall e.e -&gt; c -&gt; c
+ , member :: forall e.e -&gt; c -&gt; Bool
+ }</code></pre>
+<p>... nie o to nam chodziło.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Collection</span> [a] <span class="kw">where</span>
+   insert <span class="fu">=</span> (<span class="fu">:</span>)
+   member <span class="fu">=</span> undefined</code></pre></div>
+<pre><code>-- (:) :: forall t. t -&gt; [t] -&gt; [t]
+ColList :: forall a. ColDic a
+ColList = \@ a -&gt; CD { insert = (:) @ a, member = </code></pre>
+</div>
+<div id="problem-z-klasami-wieloparametrowymi-2" class="slide section level1">
+<h1>Problem z klasami wieloparametrowymi</h1>
+<p><!--- `BadCollection2.hs` --> <!---
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
+--></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Collection</span> c e <span class="kw">where</span>
+<span class="ot">  insert ::</span> e <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> c
+<span class="ot">  member ::</span> e <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="kw">instance</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> <span class="dt">Collection</span> [a] a <span class="kw">where</span>
+  insert  <span class="fu">=</span> (<span class="fu">:</span>)
+  member <span class="fu">=</span> elem
+     
+ins2 x y c <span class="fu">=</span> insert y (insert x c)
+<span class="co">-- ins2 :: (Collection c e, Collection c e1) =&gt; e1 -&gt; e -&gt; c -&gt; c</span>
+
+<span class="ot">problem1 ::</span> [<span class="dt">Int</span>]
+problem1 <span class="fu">=</span> ins2 <span class="dv">1</span> <span class="dv">2</span> []
+<span class="co">-- No instances for (Collection [Int] e0, Collection [Int] e1)</span>
+<span class="co">-- arising from a use of `ins2&#39;</span>
+
+problem2 <span class="fu">=</span> ins2 <span class="ch">&#39;a&#39;</span> <span class="ch">&#39;b&#39;</span> []
+<span class="co">-- No instance for (Collection [a0] Char)</span>
+<span class="co">--       arising from a use of `ins2&#39;</span>
+
+<span class="ot">problem3 ::</span> (<span class="dt">Collection</span> c0 <span class="dt">Char</span>, <span class="dt">Collection</span> c0 <span class="dt">Bool</span>) <span class="ot">=&gt;</span> c0 <span class="ot">-&gt;</span> c0
+problem3 <span class="fu">=</span> ins2 <span class="dt">True</span> <span class="ch">&#39;a&#39;</span>
+<span class="co">-- Tu problem akurat polega na tym, że to jest poprawne typowo</span>
+<span class="co">-- ...a chyba nie powinno być</span></code></pre></div>
+</div>
+<div id="zależności-funkcyjne" class="slide section level1">
+<h1>Zależności funkcyjne</h1>
+<p>Czasami w klasach wieloparametrowych, jeden parametr wyznacza inny, np.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"> <span class="kw">class</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="fu">|</span> m <span class="ot">-&gt;</span> s <span class="kw">where</span> <span class="fu">...</span>
+
+ <span class="kw">class</span> <span class="dt">Collects</span> e ce <span class="fu">|</span> ce <span class="ot">-&gt;</span> e <span class="kw">where</span>
+<span class="ot">      empty  ::</span> ce
+<span class="ot">      insert ::</span> e <span class="ot">-&gt;</span> ce <span class="ot">-&gt;</span> ce
+<span class="ot">      member ::</span> e <span class="ot">-&gt;</span> ce <span class="ot">-&gt;</span> <span class="dt">Bool</span></code></pre></div>
+<p>Problem: <em>Fundeps are very, very tricky.</em> - SPJ</p>
+<p>Więcej: http://research.microsoft.com/en-us/um/people/simonpj/papers/fd-chr/</p>
+</div>
+<div id="refleksja---czemu-nie-klasy-konstruktorowe" class="slide section level1">
+<h1>Refleksja - czemu nie klasy konstruktorowe?</h1>
+<p>Problem kolekcji możemy rozwiązać np. tak:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Collection</span> c <span class="kw">where</span>
+<span class="ot">  insert ::</span> e <span class="ot">-&gt;</span> c e <span class="ot">-&gt;</span> c e
+<span class="ot">  member ::</span> <span class="dt">Eq</span> e <span class="ot">=&gt;</span> e <span class="ot">-&gt;</span> c e<span class="ot">-&gt;</span> <span class="dt">Bool</span>
+
+<span class="kw">instance</span> <span class="dt">Collection</span> [] <span class="kw">where</span>
+     insert x xs <span class="fu">=</span> x<span class="fu">:</span>xs
+     member <span class="fu">=</span> elem</code></pre></div>
+<p>ale nie rozwiązuje to problemu np. z monadą stanu:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"> <span class="kw">class</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="fu">|</span> m <span class="ot">-&gt;</span> s <span class="kw">where</span> 
+<span class="ot">   get ::</span> m s
+<span class="ot">   put ::</span> s <span class="ot">-&gt;</span> m ()</code></pre></div>
+<p>typ stanu <code>s</code> nie jest tu parametrem konstruktora <code>m</code>.</p>
+</div>
+<div id="fundeps-are-very-very-tricky" class="slide section level1">
+<h1>Fundeps are very very tricky</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Mul</span> a b c <span class="fu">|</span> a b <span class="ot">-&gt;</span> c <span class="kw">where</span>
+<span class="ot">  (*) ::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c
+  
+<span class="kw">newtype</span> <span class="dt">Vec</span> a <span class="fu">=</span> <span class="dt">Vec</span> [a]
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Vec</span> <span class="kw">where</span>
+  fmap f (<span class="dt">Vec</span> as) <span class="fu">=</span> <span class="dt">Vec</span> <span class="fu">$</span> map f as
+  
+<span class="kw">instance</span> <span class="dt">Mul</span> a b c <span class="ot">=&gt;</span> <span class="dt">Mul</span> a (<span class="dt">Vec</span> b) (<span class="dt">Vec</span> c) <span class="kw">where</span>
+  a <span class="fu">*</span> b <span class="fu">=</span> fmap (a<span class="fu">*</span>) b
+  
+f t x y <span class="fu">=</span> <span class="kw">if</span> t <span class="kw">then</span>  x <span class="fu">*</span> (<span class="dt">Vec</span> [y]) <span class="kw">else</span> y</code></pre></div>
+<p>Jakiego typu jest f? Niech x::a, y::b.</p>
+<p>Wtedy typem wyniku jest b i musimy mieć instancję <code>Mul a (Vec b) b</code></p>
+<p>Z kolei <code>a b -&gt; c</code> implikuje, że <code>b = Vec c</code> dla pewnego c, czyli szukamy instancji</p>
+<pre><code>Mul a (Vec (Vec c)) (Vec c)</code></pre>
+<p>zastosowanie reguły <code>Mul a b c =&gt; Mul a (Vec b) (Vec c)</code> doprowadzi nas do <code>Mul a (Vec c) c</code>.</p>
+<p>...i tak w kółko.</p>
+</div>
+<div id="spróbujmy" class="slide section level1">
+<h1>Spróbujmy</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">Mul1.hs<span class="fu">:</span><span class="dv">16</span><span class="fu">:</span><span class="dv">21</span><span class="fu">:</span>
+    <span class="dt">Context</span> reduction stack overflow; size <span class="fu">=</span> <span class="dv">21</span>
+    <span class="dt">Use</span> <span class="fu">-</span>fcontext<span class="fu">-</span>stack<span class="fu">=</span><span class="dt">N</span> to increase stack size to <span class="dt">N</span>
+<span class="ot">      co ::</span> c18 <span class="fu">~</span> <span class="dt">Vec</span> c19
+      <span class="fu">$</span><span class="ot">dMul ::</span> <span class="dt">Mul</span> a0 c17 c18
+      <span class="fu">$</span><span class="ot">dMul ::</span> <span class="dt">Mul</span> a0 c16 c17
+      <span class="fu">...</span>
+      <span class="fu">$</span><span class="ot">dMul ::</span> <span class="dt">Mul</span> a0 c1 c2
+      <span class="fu">$</span><span class="ot">dMul ::</span> <span class="dt">Mul</span> a0 c c1
+      <span class="fu">$</span><span class="ot">dMul ::</span> <span class="dt">Mul</span> a0 c0 c
+      <span class="fu">$</span><span class="ot">dMul ::</span> <span class="dt">Mul</span> a0 (<span class="dt">Vec</span> c0) c0
+    <span class="dt">When</span> using functional dependencies to combine
+      <span class="dt">Mul</span> a (<span class="dt">Vec</span> b) (<span class="dt">Vec</span> c),
+        arising from the dependency <span class="ot">`a b -&gt; c&#39;</span>
+<span class="ot">        in the instance declaration at 3/Mul1.hs:13:10</span>
+<span class="ot">      Mul a0 (Vec c18) c18,</span>
+<span class="ot">        arising from a use of `</span>mul&#39; at <span class="dv">3</span><span class="fu">/</span>Mul1.hs<span class="fu">:</span><span class="dv">16</span><span class="fu">:</span><span class="dv">21</span><span class="fu">-</span><span class="dv">23</span>
+    <span class="dt">In</span> the expression<span class="fu">:</span> mul x (<span class="dt">Vec</span> [y])
+    <span class="dt">In</span> the expression<span class="fu">:</span> <span class="kw">if</span> b <span class="kw">then</span> mul x (<span class="dt">Vec</span> [y]) <span class="kw">else</span> y</code></pre></div>
+<p>(musimy użyć UndecidableInstances, żeby GHC w ogóle spróbowało - ten przykład pokazuje co jest 'Undecidable').</p>
+</div>
+<div id="rodziny-typów" class="slide section level1">
+<h1>Rodziny typów</h1>
+<p>Rodziny to funkcje na typach - jak na pierwszym wykładzie</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# TypeFamilies #-}</span>
+
+<span class="kw">data</span> <span class="dt">Zero</span> <span class="fu">=</span> <span class="dt">Zero</span>
+<span class="kw">data</span> <span class="dt">Suc</span> n <span class="fu">=</span> <span class="dt">Suc</span> n
+
+<span class="kw">type</span> family m <span class="fu">:+</span> n
+<span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Zero</span> <span class="fu">:+</span> n <span class="fu">=</span> n
+<span class="kw">type</span> <span class="kw">instance</span> (<span class="dt">Suc</span> m) <span class="fu">:+</span> n <span class="fu">=</span> <span class="dt">Suc</span>(m<span class="fu">:+</span>n)
+
+<span class="ot">vhead ::</span> <span class="dt">Vec</span> (<span class="dt">Suc</span> n) a <span class="ot">-&gt;</span> a
+<span class="ot">vappend ::</span> <span class="dt">Vec</span> m a <span class="ot">-&gt;</span> <span class="dt">Vec</span> n a <span class="ot">-&gt;</span> <span class="dt">Vec</span> (m<span class="fu">:+</span>n) a</code></pre></div>
+<p>Trochę dalej powiemy sobie o nich bardziej systematycznie.</p>
+</div>
+</body>
+</html>
