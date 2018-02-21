@@ -1,0 +1,541 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Marcin Benke" />
+  <title>Zaawansowane programowanie funkcyjne</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #0000ff; } /* Keyword */
+code > span.ch { color: #008080; } /* Char */
+code > span.st { color: #008080; } /* String */
+code > span.co { color: #008000; } /* Comment */
+code > span.ot { color: #ff4000; } /* Other */
+code > span.al { color: #ff0000; } /* Alert */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #008000; font-weight: bold; } /* Warning */
+code > span.cn { } /* Constant */
+code > span.sc { color: #008080; } /* SpecialChar */
+code > span.vs { color: #008080; } /* VerbatimString */
+code > span.ss { color: #008080; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #0000ff; } /* ControlFlow */
+code > span.op { } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ff4000; } /* Preprocessor */
+code > span.do { color: #008000; } /* Documentation */
+code > span.an { color: #008000; } /* Annotation */
+code > span.cv { color: #008000; } /* CommentVar */
+code > span.at { } /* Attribute */
+code > span.in { color: #008000; } /* Information */
+  </style>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+</head>
+<body>
+<div id="header">
+<h1 class="title">Zaawansowane programowanie funkcyjne</h1>
+<h2 class="author">Marcin Benke</h2>
+<h3 class="date">6 marca 2018</h3>
+</div>
+<p><meta name="duration" content="80" /></p>
+<h1 id="testowanie-programów-w-haskellu">Testowanie programów w Haskellu</h1>
+<ul>
+<li>doctest <a href="https://github.com/sol/doctest">github: sol/doctest</a></li>
+<li>HUnit</li>
+<li>Quickcheck</li>
+<li>QuickCheck + doctest</li>
+<li>Hedgehog <a href="https://github.com/hedgehogqa/haskell-hedgehog">github: hedgehogqa/haskell-hedgehog</a></li>
+</ul>
+<h1 id="doctest">doctest</h1>
+<p>Przykłady w dokumetacji mogą służyć za testy regresji</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">DoctestExamples</span> <span class="kw">where</span>
+<span class="co">-- | Expect success</span>
+<span class="co">-- &gt;&gt;&gt; 2 + 2</span>
+<span class="co">-- 4</span>
+
+<span class="co">-- | Expect failure</span>
+<span class="co">-- &gt;&gt;&gt; 2 + 2</span>
+<span class="co">-- 5</span></code></pre></div>
+<pre><code>doctest DoctestExamples.hs      
+### Failure in DoctestExamples.hs:7: expression `2 + 2&#39;
+expected: 5
+ but got: 4
+Examples: 2  Tried: 2  Errors: 0  Failures: 1</code></pre>
+<h1 id="przykład-z-bnfc">Przykład z BNFC</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | Generate a name in the given case style taking into account the reserved</span>
+<span class="co">-- word of the language.</span>
+<span class="co">-- &gt;&gt;&gt; mkName [] SnakeCase &quot;FooBAR&quot;</span>
+<span class="co">-- &quot;foo_bar&quot;</span>
+<span class="co">-- &gt;&gt;&gt; mkName [] CamelCase &quot;FooBAR&quot;</span>
+<span class="co">-- &quot;FooBAR&quot;</span>
+<span class="co">-- &gt;&gt;&gt; mkName [] CamelCase &quot;Foo_bar&quot;</span>
+<span class="co">-- &quot;FooBar&quot;</span>
+<span class="co">-- &gt;&gt;&gt; mkName [&quot;foobar&quot;] LowerCase &quot;FooBAR&quot;</span>
+<span class="co">-- &quot;foobar_&quot;</span>
+<span class="ot">mkName ::</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">NameStyle</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+mkName reserved style s <span class="fu">=</span> <span class="fu">...</span></code></pre></div>
+<h1 id="hunit">HUnit</h1>
+<p>W większości języków powszechną praktyką jest stosowanie testów jednostkowych.</p>
+<p>Mozna to robić i w Haskellu., np.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Test.HUnit</span>
+<span class="kw">import </span><span class="dt">MyArray</span>
+
+main <span class="fu">=</span> runTestTT tests
+
+tests <span class="fu">=</span> <span class="dt">TestList</span> [test1,test2]
+
+listArray1 es <span class="fu">=</span> listArray (<span class="dv">1</span>,length es) es
+test1 <span class="fu">=</span> <span class="dt">TestCase</span><span class="fu">$</span>assertEqual <span class="st">&quot;a!2 = 2&quot;</span> (listArray1 [<span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>] <span class="fu">!</span> <span class="dv">2</span>) <span class="dv">2</span>
+test2 <span class="fu">=</span> <span class="dt">TestCase</span><span class="fu">$</span>assertEqual <span class="st">&quot;elems . array = id&quot;</span> 
+                             (elems <span class="fu">$</span> listArray1 [<span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>]) [<span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>]</code></pre></div>
+<p>albo</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Test.HUnit</span>
+
+run <span class="fu">=</span> runTestTT tests
+tests <span class="fu">=</span> <span class="dt">TestList</span> [<span class="dt">TestLabel</span> <span class="st">&quot;test1&quot;</span> test1, <span class="dt">TestLabel</span> <span class="st">&quot;test2&quot;</span> test2]
+
+test1 <span class="fu">=</span> <span class="dt">TestCase</span> (assertEqual <span class="st">&quot;for (foo 3),&quot;</span> (<span class="dv">1</span>,<span class="dv">2</span>) (foo <span class="dv">3</span>))
+test2 <span class="fu">=</span> <span class="dt">TestCase</span> (<span class="kw">do</span> (x,y) <span class="ot">&lt;-</span> partA <span class="dv">3</span>
+                     assertEqual <span class="st">&quot;for the first result of partA,&quot;</span> <span class="dv">5</span> x
+                     b <span class="ot">&lt;-</span> partB y
+                     assertBool (<span class="st">&quot;(partB &quot;</span> <span class="fu">++</span> show y <span class="fu">++</span> <span class="st">&quot;) failed&quot;</span>) b)</code></pre></div>
+<pre><code>*Main Test.HUnit&gt; run
+Cases: 2  Tried: 2  Errors: 0  Failures: 0
+Counts {cases = 2, tried = 2, errors = 0, failures = 0}
+
+*Main Test.HUnit&gt; :t runTestTT
+runTestTT :: Test -&gt; IO Counts</code></pre>
+<h1 id="posortujmy-listę">Posortujmy listę</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">mergeSort ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]
+mergeSort pred <span class="fu">=</span> go
+  <span class="kw">where</span>
+    go []  <span class="fu">=</span> []
+    go [x] <span class="fu">=</span> [x]
+    go xs  <span class="fu">=</span> merge (go xs1) (go xs2)
+      <span class="kw">where</span> (xs1,xs2) <span class="fu">=</span> split xs
+
+    merge xs [] <span class="fu">=</span> xs
+    merge [] ys <span class="fu">=</span> ys
+    merge (x<span class="fu">:</span>xs) (y<span class="fu">:</span>ys)
+      <span class="fu">|</span> pred x y  <span class="fu">=</span> x <span class="fu">:</span> merge xs (y<span class="fu">:</span>ys)
+      <span class="fu">|</span> otherwise <span class="fu">=</span> y <span class="fu">:</span> merge (x<span class="fu">:</span>xs) ys</code></pre></div>
+<h1 id="funkcja-split">Funkcja split</h1>
+<p>...tworzy dwie podlisty podobnej długości, które będzie można po posortowaniu złączyć</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">split ::</span> [a] <span class="ot">-&gt;</span> ([a],[a])
+split []       <span class="fu">=</span> ([],[])
+split [x]      <span class="fu">=</span> ([x],[])
+split (x<span class="fu">:</span>y<span class="fu">:</span>zs) <span class="fu">=</span> (x<span class="fu">:</span>xs,y<span class="fu">:</span>ys)
+  <span class="kw">where</span> (xs,ys) <span class="fu">=</span> split zs</code></pre></div>
+<h1 id="sortowanie-testy-jednostkowe">Sortowanie: testy jednostkowe</h1>
+<pre><code>sort = mergeSort ((&lt;=) :: Int -&gt; Int -&gt; Bool)
+
+sort [1,2,3,4] == [1,2,3,4]
+sort [4,3,2,1] == [1,2,3,4]
+sort [1,4,2,3] == [1,2,3,4]
+...</code></pre>
+<p>To się robi trochę nudne...</p>
+<p>...ale dzięki typom, można lepiej.</p>
+<h1 id="własności">Własności</h1>
+<p>oczywista własność sortowania:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">prop_idempotent <span class="fu">=</span> sort <span class="fu">.</span> sort <span class="fu">==</span> sort</code></pre></div>
+<p>nie jest definiowalna; nie możemy porównywać funkcji.</p>
+<p>Możemy &quot;oszukać&quot;:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">prop_idempotent xs <span class="fu">=</span> 
+    sort (sort xs) <span class="fu">==</span> sort xs</code></pre></div>
+<p>Spróbujmy w interpreterze:</p>
+<pre><code>*Main&gt; prop_idempotent [3,2,1]
+True</code></pre>
+<h1 id="próba-mechanizacji">Próba mechanizacji</h1>
+<p>Możemy to próbować zmechanizować:</p>
+<pre><code>prop_permute :: ([a] -&gt; Bool) -&gt; [a] -&gt; Bool
+prop_permute prop = all prop . permutations
+
+*Main&gt; prop_permute prop_idempotent [1,2,3]
+True
+*Main&gt; prop_permute prop_idempotent [1..4]
+True
+*Main&gt; prop_permute prop_idempotent [1..5]
+True
+*Main&gt; prop_permute prop_idempotent [1..10]
+  C-c C-cInterrupted.</code></pre>
+<h1 id="quickcheck">QuickCheck</h1>
+<ul>
+<li><p>Generowanie dużej ilości testów jednostkowych jest żmudne</p></li>
+<li><p>Sprawdzenie wszystkich możliwości jest nierealistyczne</p></li>
+<li><p>Pomysł: wygenerować odpowiednią losową próbkę danych</p></li>
+</ul>
+<pre><code>*Main&gt; import Test.QuickCheck
+*Main Test.QuickCheck&gt; quickCheck prop_idempotent
++++ OK, passed 100 tests.</code></pre>
+<p>QuickCheck wylosował 100 list i sprawdził własność,</p>
+<p>Możemy zażyczyć sobie np. 1000:</p>
+<pre><code>*Main Test.QuickCheck&gt; quickCheckWith stdArgs {maxSuccess = 1000}  prop_idempotent
++++ OK, passed 1000 tests.</code></pre>
+<p>Uwaga: nie możemy losować wartości polimorficznych, dlatego <code>prop_idempotent</code> monomorficzne.</p>
+<p><strong>Ćwiczenie:</strong> napisz i uruchom kilka testów dla sortowania i kilka testów dla własnych funkcji.</p>
+<h1 id="jak-to-działa">Jak to działa?</h1>
+<p>Dla uproszczenia najpierw przyjrzyjmy się starszej wersji</p>
+<p>Główne składniki</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="ot">quickCheck  ::</span> <span class="dt">Testable</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+quickCheck   <span class="fu">=</span> check quick
+
+
+<span class="ot">check ::</span> <span class="dt">Testable</span> a <span class="ot">=&gt;</span> <span class="dt">Config</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+<span class="ot">quick ::</span> <span class="dt">Config</span>
+
+<span class="kw">class</span> <span class="dt">Testable</span> a <span class="kw">where</span>
+<span class="ot">  property ::</span> a <span class="ot">-&gt;</span> <span class="dt">Property</span>
+
+<span class="kw">instance</span> <span class="dt">Testable</span> <span class="dt">Bool</span> <span class="kw">where</span><span class="fu">...</span>
+
+<span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Show</span> a, <span class="dt">Testable</span> b) <span class="ot">=&gt;</span> <span class="dt">Testable</span> (a <span class="ot">-&gt;</span> b) <span class="kw">where</span>
+  property f <span class="fu">=</span> forAll arbitrary f
+
+<span class="kw">class</span> <span class="dt">Arbitrary</span> a <span class="kw">where</span>
+<span class="ot">  arbitrary   ::</span> <span class="dt">Gen</span> a</code></pre></div>
+<h1 id="generacja-liczb-losowych">Generacja liczb losowych</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">System.Random</span>
+  ( <span class="dt">StdGen</span>       <span class="co">-- :: *</span>
+  , newStdGen    <span class="co">-- :: IO StdGen</span>
+  , randomR      <span class="co">-- :: (RandomGen g, Random a) =&gt; (a, a) -&gt; g -&gt; (a, g)</span>
+  , split        <span class="co">-- :: RandomGen g =&gt; g -&gt; (g, g)</span>
+                 <span class="co">-- rozdziela argument na dwa niezależne generatory</span>
+  <span class="co">-- instance RandomGen StdGen</span>
+  <span class="co">-- instance Random Int  </span>
+  )
+  
+<span class="ot">roll ::</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+roll rnd <span class="fu">=</span> fst <span class="fu">$</span> randomR (<span class="dv">1</span>,<span class="dv">6</span>) rnd
+main <span class="fu">=</span> <span class="kw">do</span> 
+  rnd <span class="ot">&lt;-</span> newStdGen 
+  <span class="kw">let</span> (r1,r2) <span class="fu">=</span> split rnd
+  print (roll r1)
+  print (roll r2)
+  print (roll r1)
+  print (roll r2)</code></pre></div>
+<pre><code>*Main System.Random&gt; main
+4
+5
+4
+5</code></pre>
+<h1 id="generatory-losowych-obiektów">Generatory losowych obiektów</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">choose ::</span> (<span class="dt">Int</span>,<span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Int</span>
+<span class="ot">oneof ::</span> [<span class="dt">Gen</span> a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Int</span> <span class="kw">where</span>
+    arbitrary <span class="fu">=</span> choose (<span class="fu">-</span><span class="dv">100</span>, <span class="dv">100</span>)
+
+<span class="kw">data</span> <span class="dt">Colour</span> <span class="fu">=</span> <span class="dt">Red</span> <span class="fu">|</span> <span class="dt">Green</span> <span class="fu">|</span> blue
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Colour</span> <span class="kw">where</span>
+    arbitrary <span class="fu">=</span> oneof [return <span class="dt">Red</span>, return <span class="dt">Green</span>, return <span class="dt">Blue</span>]
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> [a] <span class="kw">where</span>
+    arbitrary <span class="fu">=</span> oneof [return [], liftM2 (<span class="fu">:</span>) arbitrary arbitrary]
+
+<span class="ot">generate ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a</code></pre></div>
+<p>Jaka jest oczekiwana długość wylosowanej listy?</p>
+<p><span class="math display">\[ \sum_{n=0}^\infty {n\over 2^{n+1}} = 1 \]</span></p>
+<h1 id="dopasowanie-rozkładu">Dopasowanie rozkładu</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">frequency ::</span> [(<span class="dt">Int</span>, <span class="dt">Gen</span> a)] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> [a] <span class="kw">where</span>
+    arbitrary <span class="fu">=</span> frequency
+        [ (<span class="dv">1</span>, return [])
+        , (<span class="dv">4</span>, liftM2 (<span class="fu">:</span>) arbitrary arbitrary])
+        ]
+
+<span class="kw">data</span> <span class="dt">Tree</span> a <span class="fu">=</span> <span class="dt">Leaf</span> a <span class="fu">|</span> <span class="dt">Branch</span> (<span class="dt">Tree</span> a) (<span class="dt">Tree</span> a)
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Tree</span> a) <span class="kw">where</span>
+    arbitrary <span class="fu">=</span> frequency
+        [(<span class="dv">1</span>, liftM <span class="dt">Leaf</span> arbitrary)
+        ,(<span class="dv">2</span>, liftM2 <span class="dt">Branch</span> arbitrary arbitrary)
+        ]
+
+<span class="ot">threetrees ::</span> <span class="dt">Gen</span> [<span class="dt">Tree</span> <span class="dt">Int</span>]
+threetrees <span class="fu">=</span> sequence [arbitrary, arbitrary, arbitrary]</code></pre></div>
+<p>jakie jest prawdopodobieństwo że generowanie 3 drzew się zatrzyma?</p>
+<!---
+
+Dla jednego drzewa:
+
+$$ p = {1\over 3} + {2\over 3} p^2 $$
+
+$$ p = 1/2 $$
+
+-->
+<h1 id="ograniczanie-rozmiaru">Ograniczanie rozmiaru</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- generator bierze pożądany rozmiar i StdGen i daje a</span>
+<span class="kw">newtype</span> <span class="dt">Gen</span> a <span class="fu">=</span> <span class="dt">Gen</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> a)
+
+<span class="ot">chooseInt1 ::</span> (<span class="dt">Int</span>,<span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Int</span>
+chooseInt1 bounds <span class="fu">=</span> <span class="dt">Gen</span> <span class="fu">$</span> \n r  <span class="ot">-&gt;</span> fst (randomR bounds r)
+
+<span class="ot">sized ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+sized fgen <span class="fu">=</span> <span class="dt">Gen</span> (\n r <span class="ot">-&gt;</span> <span class="kw">let</span> <span class="dt">Gen</span> m <span class="fu">=</span> fgen n <span class="kw">in</span> m n r)
+
+<span class="ot">resize ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+resize n (<span class="dt">Gen</span> m) <span class="fu">=</span> <span class="dt">Gen</span> (\_ r <span class="ot">-&gt;</span> m n r)</code></pre></div>
+<h1 id="lepsze-arbitrary-dla-tree">Lepsze Arbitrary dla Tree</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Tree</span> a) <span class="kw">where</span>
+    arbitrary <span class="fu">=</span> sized arbTree
+
+arbTree <span class="dv">0</span> <span class="fu">=</span> liftM <span class="dt">Leaf</span> arbitrary
+arbTree n <span class="fu">=</span> frequency
+        [(<span class="dv">1</span>, liftM <span class="dt">Leaf</span> arbitrary)
+        ,(<span class="dv">4</span>, liftM2 <span class="dt">Branch</span> (arbTree (div n <span class="dv">2</span>))(arbTree (div n <span class="dv">2</span>)))
+        ]</code></pre></div>
+<h1 id="monada-generatorów">Monada generatorów</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Trochę jak monada stanu, tylko musimy rozdzielić &quot;stan&quot; na dwa</span>
+<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Gen</span> <span class="kw">where</span>
+  return a <span class="fu">=</span> <span class="dt">Gen</span> <span class="fu">$</span> \n r <span class="ot">-&gt;</span> a
+  <span class="dt">Gen</span> m <span class="fu">&gt;&gt;=</span> k <span class="fu">=</span> <span class="dt">Gen</span> <span class="fu">$</span> \n r0 <span class="ot">-&gt;</span>
+    <span class="kw">let</span> (r1,r2) <span class="fu">=</span> split r0
+        <span class="dt">Gen</span> m&#39;  <span class="fu">=</span> k (m n r1)
+     <span class="kw">in</span> m&#39; n r2
+
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Gen</span> <span class="kw">where</span>
+  fmap f m <span class="fu">=</span> m <span class="fu">&gt;&gt;=</span> return <span class="fu">.</span> f
+                     
+<span class="ot">chooseInt ::</span> (<span class="dt">Int</span>,<span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Int</span>
+chooseInt bounds <span class="fu">=</span> (fst <span class="fu">.</span> randomR bounds) <span class="ot">`fmap`</span> rand
+
+<span class="ot">rand ::</span> <span class="dt">Gen</span> <span class="dt">StdGen</span>
+rand <span class="fu">=</span> <span class="dt">Gen</span> (\n r <span class="ot">-&gt;</span> r)
+
+<span class="ot">choose ::</span>  <span class="dt">Random</span> a <span class="ot">=&gt;</span> (a, a) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+choose bounds <span class="fu">=</span> (fst <span class="fu">.</span> randomR bounds) <span class="ot">`fmap`</span> rand</code></pre></div>
+<h1 id="arbitrary">Arbitrary</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Arbitrary</span> a <span class="kw">where</span>
+<span class="ot">  arbitrary   ::</span> <span class="dt">Gen</span> a
+
+<span class="ot">elements ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+elements xs <span class="fu">=</span> (xs <span class="fu">!!</span>) <span class="ot">`fmap`</span> choose (<span class="dv">0</span>, length xs <span class="fu">-</span> <span class="dv">1</span>)
+
+<span class="ot">vector ::</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]
+vector n <span class="fu">=</span> sequence [ arbitrary <span class="fu">|</span> i <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="fu">..</span>n] ]
+<span class="co">-- sequence :: Monad m =&gt; [m a] -&gt; m [a]</span>
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> () <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> return ()
+  
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Bool</span> <span class="kw">where</span>
+  arbitrary     <span class="fu">=</span> elements [<span class="dt">True</span>, <span class="dt">False</span>]
+  
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> [a] <span class="kw">where</span>
+  arbitrary          <span class="fu">=</span> sized (\n <span class="ot">-&gt;</span> choose (<span class="dv">0</span>,n) <span class="fu">&gt;&gt;=</span> vector)
+
+<span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Int</span> <span class="kw">where</span>
+  arbitrary     <span class="fu">=</span> sized <span class="fu">$</span> \n <span class="ot">-&gt;</span> choose (<span class="fu">-</span>n,n)</code></pre></div>
+<h1 id="result---wynik-testu">Result - wynik testu</h1>
+<p>Test może dać trojaki wynik:</p>
+<ul>
+<li>Just True - sukces</li>
+<li>Just False - porażka (plus kontrprzykład)</li>
+<li>Nothing - dane nie nadawały się do testu</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Result</span> <span class="fu">=</span> <span class="dt">Result</span> {<span class="ot"> ok ::</span> <span class="dt">Maybe</span> <span class="dt">Bool</span>,<span class="ot"> arguments ::</span> [<span class="dt">String</span>] }
+
+<span class="ot">nothing ::</span> <span class="dt">Result</span>
+nothing <span class="fu">=</span> <span class="dt">Result</span>{ ok <span class="fu">=</span> <span class="dt">Nothing</span>,  arguments <span class="fu">=</span> [] }
+
+<span class="kw">newtype</span> <span class="dt">Property</span>
+  <span class="fu">=</span> <span class="dt">Prop</span> (<span class="dt">Gen</span> <span class="dt">Result</span>)</code></pre></div>
+<p>Własność (<code>Property</code>), to obliczenie w monadzie <code>Gen</code> dające <code>Result</code></p>
+<h1 id="testable">Testable</h1>
+<p>Aby coś przetestować musimy mieć dla tego generator wyników:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Testable</span> a <span class="kw">where</span>
+<span class="ot">  property ::</span> a <span class="ot">-&gt;</span> <span class="dt">Property</span>  
+
+<span class="ot">result ::</span> <span class="dt">Result</span> <span class="ot">-&gt;</span> <span class="dt">Property</span>
+result res <span class="fu">=</span> <span class="dt">Prop</span> (return res)
+
+<span class="kw">instance</span> <span class="dt">Testable</span> () <span class="kw">where</span>
+  property () <span class="fu">=</span> result nothing
+
+<span class="kw">instance</span> <span class="dt">Testable</span> <span class="dt">Bool</span> <span class="kw">where</span>
+  property b <span class="fu">=</span> result (nothing { ok <span class="fu">=</span> <span class="dt">Just</span> b })
+
+<span class="kw">instance</span> <span class="dt">Testable</span> <span class="dt">Property</span> <span class="kw">where</span>
+  property prop <span class="fu">=</span> prop</code></pre></div>
+<pre><code>*SimpleCheck1&gt; check True
+OK, passed 100 tests
+*SimpleCheck1&gt; check False
+Falsifiable, after 0 tests:</code></pre>
+<h1 id="uruchamianie-testów">Uruchamianie testów</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">generate ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> a
+
+<span class="ot">tests ::</span> <span class="dt">Gen</span> <span class="dt">Result</span> <span class="ot">-&gt;</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> () 
+tests gen rnd0 ntest nfail 
+  <span class="fu">|</span> ntest <span class="fu">==</span> configMaxTest <span class="fu">=</span> <span class="kw">do</span> done <span class="st">&quot;OK, passed&quot;</span> ntest
+  <span class="fu">|</span> nfail <span class="fu">==</span> configMaxFail <span class="fu">=</span> <span class="kw">do</span> done <span class="st">&quot;Arguments exhausted after&quot;</span> ntest
+  <span class="fu">|</span> otherwise               <span class="fu">=</span>
+         <span class="kw">case</span> ok result <span class="kw">of</span>
+           <span class="dt">Nothing</span>    <span class="ot">-&gt;</span>
+             tests gen rnd1 ntest (nfail<span class="fu">+</span><span class="dv">1</span>) 
+           <span class="dt">Just</span> <span class="dt">True</span>  <span class="ot">-&gt;</span>
+             tests gen rnd1 (ntest<span class="fu">+</span><span class="dv">1</span>) nfail 
+           <span class="dt">Just</span> <span class="dt">False</span> <span class="ot">-&gt;</span>
+             putStr ( <span class="st">&quot;Falsifiable, after &quot;</span>
+                   <span class="fu">++</span> show ntest
+                   <span class="fu">++</span> <span class="st">&quot; tests:\n&quot;</span>
+                   <span class="fu">++</span> unlines (arguments result)
+                    )
+     <span class="kw">where</span>
+      result      <span class="fu">=</span> generate (configSize ntest) rnd2 gen
+      (rnd1,rnd2) <span class="fu">=</span> split rnd0</code></pre></div>
+<h1 id="forall">forAll</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">evaluate ::</span> <span class="dt">Testable</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Result</span>
+evaluate a <span class="fu">=</span> gen <span class="kw">where</span> <span class="dt">Prop</span> gen <span class="fu">=</span> property a 
+                       
+<span class="ot">forAll ::</span> (<span class="dt">Show</span> a, <span class="dt">Testable</span> b) <span class="ot">=&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Property</span>
+forAll gen body <span class="fu">=</span> <span class="dt">Prop</span> <span class="fu">$</span>
+  <span class="kw">do</span> a   <span class="ot">&lt;-</span> gen
+     res <span class="ot">&lt;-</span> evaluate (body a)
+     return (argument a res)
+ <span class="kw">where</span>
+  argument a res <span class="fu">=</span> res{ arguments <span class="fu">=</span> show a <span class="fu">:</span> arguments res }
+
+
+<span class="ot">propAddCom1 ::</span> <span class="dt">Property</span>
+propAddCom1 <span class="fu">=</span>  forAll (chooseInt (<span class="fu">-</span><span class="dv">100</span>,<span class="dv">100</span>)) (\x <span class="ot">-&gt;</span> x <span class="fu">+</span> <span class="dv">1</span> <span class="fu">==</span> <span class="dv">1</span> <span class="fu">+</span> x)
+propAddCom2 <span class="fu">=</span>  forAll int (\x <span class="ot">-&gt;</span> forAll int (\y <span class="ot">-&gt;</span> x <span class="fu">+</span> y <span class="fu">==</span> y <span class="fu">+</span> x)) <span class="kw">where</span>
+  int <span class="fu">=</span> chooseInt (<span class="fu">-</span><span class="dv">100</span>,<span class="dv">100</span>)</code></pre></div>
+<pre><code>&gt;&gt;&gt; check $ forAll (chooseInt (-100,100)) (\x -&gt; x + 0 == x)
+OK, passed 100 tests
+&gt;&gt;&gt; check $ forAll (chooseInt (-100,100)) (\x -&gt; x + 1 == x)
+Falsifiable, after 0 tests:
+-22</code></pre>
+<h1 id="funkcje-i-implikacja">Funkcje i implikacja</h1>
+<p>Mając <code>forAll</code>, funkcje są zaskakująco łatwe:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a, <span class="dt">Show</span> a, <span class="dt">Testable</span> b) <span class="ot">=&gt;</span> <span class="dt">Testable</span> (a <span class="ot">-&gt;</span> b) <span class="kw">where</span>
+  property f <span class="fu">=</span> forAll arbitrary f
+
+<span class="ot">propAddCom3 ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>  
+propAddCom3 x y <span class="fu">=</span> x <span class="fu">+</span> y <span class="fu">==</span> y <span class="fu">+</span> x</code></pre></div>
+<p>Jeszcze implikacja: jeśli p to q</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(==&gt;) ::</span> <span class="dt">Testable</span> a <span class="ot">=&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Property</span>
+<span class="dt">True</span>  <span class="fu">==&gt;</span> a <span class="fu">=</span> property a
+<span class="dt">False</span> <span class="fu">==&gt;</span> a <span class="fu">=</span> property ()
+
+<span class="ot">propMul1 ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Property</span>
+propMul1 x <span class="fu">=</span> (x<span class="fu">&gt;</span><span class="dv">0</span>) <span class="fu">==&gt;</span> (<span class="dv">2</span><span class="fu">*</span>x <span class="fu">&gt;</span> <span class="dv">0</span>) 
+
+<span class="ot">propMul2 ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Property</span>
+propMul2 x y <span class="fu">=</span> (x<span class="fu">&gt;</span><span class="dv">0</span>) <span class="fu">==&gt;</span> (x<span class="fu">*</span>y <span class="fu">&gt;</span> <span class="dv">0</span>) </code></pre></div>
+<pre><code>&gt; check propMul1
+OK, passed 100 tests
+
+&gt; check propMul2
+Falsifiable, after 0 tests:
+2
+-2</code></pre>
+<h1 id="generowanie-funkcji">Generowanie funkcji</h1>
+<p>Potrafimy testować funkcje, ale czy potrafimy wygenerować losową funkcję?</p>
+<p>Zauważmy, że</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Gen</span>(a <span class="ot">-&gt;</span> b) <span class="fu">~</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="fu">~</span> (a <span class="ot">-&gt;</span> <span class="dt">Gen</span> b)</code></pre></div>
+<p>możemy więc napisać funkcję</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">promote ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Gen</span> b) <span class="ot">-&gt;</span> <span class="dt">Gen</span> (a <span class="ot">-&gt;</span> b)
+promote f <span class="fu">=</span> <span class="dt">Gen</span> (\n r <span class="ot">-&gt;</span> \a <span class="ot">-&gt;</span> <span class="kw">let</span> <span class="dt">Gen</span> m <span class="fu">=</span> f a <span class="kw">in</span> m n r)</code></pre></div>
+<p>Możemy uzyć <code>promote</code> do skonstruowania generatora dla funkcji, jeśli tylko potrafimy skonstruować generator dla wyników zależący jakoś od argumentów.</p>
+<h1 id="coarbitrary">Coarbitrary</h1>
+<p>Możemy to opisać klasą:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">CoArbitrary</span> <span class="kw">where</span>
+<span class="ot">  coarbitrary ::</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> b <span class="ot">-&gt;</span> <span class="dt">Gen</span> b</code></pre></div>
+<p>Na podstawie wartości argumentu, <code>coarbitrary</code> tworzy transformator generatorów.</p>
+<p>Teraz możemy użyć <code>Coarbitrary</code> by stworzyć <code>Arbitrary</code> dla funkcji:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> (<span class="dt">CoArbitrary</span> a, <span class="dt">Arbitrary</span> b) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span>(a<span class="ot">-&gt;</span>b) <span class="kw">where</span>
+  arbitrary <span class="fu">=</span> promote <span class="fu">$</span> \a <span class="ot">-&gt;</span> coarbitrary a arbitrary</code></pre></div>
+<p>NB w rzeczywistości w QuickChecku <code>coarbitrary</code> jest metodą klasy <code>Arbitrary</code>.</p>
+<p><strong>Ćwiczenie:</strong> napisz kilka instancji <code>Arbitrary</code> dla swoich typów. Możesz zacząć od <code>coarbitrary = undefined</code></p>
+<h1 id="instancje-coarbitrary">Instancje CoArbitrary</h1>
+<p>Żeby definiować instancje CoArbitrary</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">CoArbitrary</span> <span class="kw">where</span>
+<span class="ot">  coarbitrary ::</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> b <span class="ot">-&gt;</span> <span class="dt">Gen</span> b</code></pre></div>
+<p>musimy umieć pisać transformatory generatorów. Zdefiniujmy funkcję</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">variant ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+variant v (<span class="dt">Gen</span> m) <span class="fu">=</span> <span class="dt">Gen</span> (\n r <span class="ot">-&gt;</span> m n (rands r <span class="fu">!!</span> (v<span class="fu">+</span><span class="dv">1</span>)))
+ <span class="kw">where</span>
+  rands r0 <span class="fu">=</span> r1 <span class="fu">:</span> rands r2 <span class="kw">where</span> (r1, r2) <span class="fu">=</span> split r0</code></pre></div>
+<p>która rozdziela generator liczb losowych na odpowiednią ilość i wybiera jeden z nich zależnie od wartości argumentu.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">CoArbitrary</span> <span class="dt">Bool</span> <span class="kw">where</span>
+  coarbitrary <span class="dt">False</span> <span class="fu">=</span> variant <span class="dv">0</span>
+  coarbitrary <span class="dt">True</span>  <span class="fu">=</span> variant <span class="dv">1</span></code></pre></div>
+<h1 id="własności-funkcji">Własności funkcji</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">infix <span class="dv">4</span> <span class="fu">===</span>
+(<span class="fu">===</span>)  f g x <span class="fu">=</span> f x <span class="fu">==</span> g x
+
+<span class="kw">instance</span> <span class="dt">Show</span>(a<span class="ot">-&gt;</span>b) <span class="kw">where</span>
+  show f <span class="fu">=</span> <span class="st">&quot;&lt;function&gt;&quot;</span>
+
+propCompAssoc f g h <span class="fu">=</span> (f <span class="fu">.</span> g) <span class="fu">.</span> h <span class="fu">===</span> f <span class="fu">.</span> (g <span class="fu">.</span> h) 
+  <span class="kw">where</span> types <span class="fu">=</span> [f,g,<span class="ot">h::</span><span class="dt">Int</span><span class="ot">-&gt;</span><span class="dt">Int</span>]</code></pre></div>
+<h1 id="problem-z-implikacją">Problem z implikacją</h1>
+<pre><code>prop_insert1 x xs = ordered (insert x xs)
+
+*Main Test.QuickCheck&gt; quickCheck prop_insert1
+*** Failed! Falsifiable (after 6 tests and 7 shrinks):  
+0
+[0,-1]</code></pre>
+<p>...oczywiście...</p>
+<pre><code>prop_insert2 x xs = ordered xs ==&gt; ordered (insert x xs)
+
+&gt;&gt;&gt; quickCheck prop_insert2
+*** Gave up! Passed only 43 tests.</code></pre>
+<p>Prawdopodobieństwo, że losowa lista jest posortowana jest niewielkie :)</p>
+<pre><code>prop_insert3 x xs = collect (length xs) $  ordered xs ==&gt; ordered (insert x xs)
+
+&gt;&gt;&gt; quickCheck prop_insert3
+*** Gave up! Passed only 37 tests:
+51% 0
+32% 1
+16% 2</code></pre>
+<p>...a i te posortowane są mało przydatne.</p>
+<h1 id="czasami-trzeba-napisać-własny-generator">Czasami trzeba napisać własny generator</h1>
+<ul>
+<li>Trzeba zdefiniować nowy typ (chyba, że już mamy)</li>
+</ul>
+<pre><code>newtype OrderedInts = OrderedInts [Int]
+
+prop_insert4 :: Int -&gt; OrderedInts -&gt; Bool
+prop_insert4  x (OrderedInts xs) = ordered (insert x xs)
+
+&gt;&gt;&gt; sample (arbitrary:: Gen OrderedInts)
+OrderedInts []
+OrderedInts [0,0]
+OrderedInts [-2,-1,2]
+OrderedInts [-4,-2,0,0,2,4]
+OrderedInts [-7,-6,-6,-5,-2,-1,5]
+OrderedInts [-13,-12,-11,-10,-10,-7,1,1,1,10]
+OrderedInts [-13,-10,-7,-5,-2,3,10,10,13]
+OrderedInts [-19,-4,26]
+OrderedInts [-63,-15,37]
+OrderedInts [-122,-53,-47,-43,-21,-19,29,53]</code></pre>
+<h1 id="doctest-quickcheck">doctest + QuickCheck</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Fib</span> <span class="kw">where</span>
+
+<span class="co">-- $setup</span>
+<span class="co">-- &gt;&gt;&gt; import Control.Applicative</span>
+<span class="co">-- &gt;&gt;&gt; import Test.QuickCheck</span>
+<span class="co">-- &gt;&gt;&gt; newtype Small = Small Int deriving Show</span>
+<span class="co">-- &gt;&gt;&gt; instance Arbitrary Small where arbitrary = Small . (`mod` 10) &lt;$&gt; arbitrary</span>
+
+<span class="co">-- | Compute Fibonacci numbers</span>
+<span class="co">--</span>
+<span class="co">-- The following property holds:</span>
+<span class="co">--</span>
+<span class="co">-- prop&gt; \(Small n) -&gt; fib n == fib (n + 2) - fib (n + 1)</span>
+<span class="ot">fib ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+fib <span class="dv">0</span> <span class="fu">=</span> <span class="dv">0</span>
+fib <span class="dv">1</span> <span class="fu">=</span> <span class="dv">1</span>
+fib n <span class="fu">=</span> fib (n <span class="fu">-</span> <span class="dv">1</span>) <span class="fu">+</span> fib (n <span class="fu">-</span> <span class="dv">2</span>)</code></pre></div>
+</body>
+</html>
