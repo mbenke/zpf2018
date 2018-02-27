@@ -190,6 +190,7 @@ Registering hello-0.1.0.0...
 2. Na students
     * Można zrobić to samo co powyżej, ale możliwy problem z quota
     * `stack setup` przy użyciu GHC 7.10 (i może 7.8) z PUBLIC
+    * `stack config set system-ghc --global true`
     * Reszta jak wyżej
    
 # Języki funkcyjne
