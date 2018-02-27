@@ -403,6 +403,69 @@ O ile Haskell bywa czasami nieczytelny, to z typami zależnymi całkiem łatwo p
 
 ...chociaż oczywiście pisanie takich dowodów jest świetną zabawą.
 
+# Parallel Haskell
+
+Równoległe rozwiązywanie Sudoku
+
+~~~~ {.haskell}
+main = do
+    [f] <- getArgs
+    grids <- fmap lines $ readFile f
+    runEval (parMap solve grids) `deepseq` return ()
+
+parMap :: (a -> b) -> [a] -> Eval [b]
+parMap f [] = return []
+parMap f (a:as) = do
+   b <- rpar (f a)
+   bs <- parMap f as
+   return (b:bs)
+
+solve :: String -> Maybe Grid
+~~~~
+
+~~~~
+$ ./sudoku3b sudoku17.1000.txt +RTS -N2 -s -RTS
+  TASKS: 4 (1 bound, 3 peak workers (3 total), using -N2)
+  SPARKS: 1000 (1000 converted, 0 overflowed, 0 dud, 0 GC'd, 0 fizzled)
+
+  Total   time    2.84s  (  1.49s elapsed)
+  Productivity  88.9% of total user, 169.6% of total elapsed
+
+-N8: Productivity  78.5% of total user, 569.3% of total elapsed
+N16: Productivity  62.8% of total user, 833.8% of total elapsed
+N32: Productivity  43.5% of total user, 1112.6% of total elapsed
+~~~~
+
+# Parallel Fibonacci
+
+~~~~ {.haskell}
+cutoff :: Int
+cutoff = 20
+
+parFib n | n < cutoff = fib n
+parFib n = p `par` q `pseq` (p + q)
+    where
+      p = parFib $ n - 1
+      q = parFib $ n - 2
+
+fib n | n<2 = n
+fib n = fib (n - 1) + fib (n - 2)
+~~~~
+
+~~~~
+./parfib +RTS -N60 -s -RTS
+ SPARKS: 118393 (42619 converted, 0 overflowed, 0 dud, 
+                 11241 GC'd, 64533 fizzled)
+
+  Total   time   17.91s  (  0.33s elapsed)
+  Productivity  98.5% of total user, 5291.5% of total elapsed
+
+-N60, cutoff=15
+  SPARKS: 974244 (164888 converted, 0 overflowed, 0 dud, 
+                  156448 GC'd, 652908 fizzled)
+  Total   time   13.59s  (  0.28s elapsed)
+  Productivity  97.6% of total user, 4746.9% of total elapsed
+~~~~
 
 # Data Parallel Haskell
 

@@ -365,6 +365,55 @@ module UsingVectorEquality {s₁ s₂} (S : Setoid s₁ s₂) where
     helper (yes ≳now) = inj₁ $ Prod.map id ≳⇒ ≳now
     helper (no  ≵now) = inj₂ $ ≳⇒ $ not-now-is-never x ≵now</code></pre>
 <p>...chociaż oczywiście pisanie takich dowodów jest świetną zabawą.</p>
+<h1 id="parallel-haskell">Parallel Haskell</h1>
+<p>Równoległe rozwiązywanie Sudoku</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">main <span class="fu">=</span> <span class="kw">do</span>
+    [f] <span class="ot">&lt;-</span> getArgs
+    grids <span class="ot">&lt;-</span> fmap lines <span class="fu">$</span> readFile f
+    runEval (parMap solve grids) <span class="ot">`deepseq`</span> return ()
+
+<span class="ot">parMap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Eval</span> [b]
+parMap f [] <span class="fu">=</span> return []
+parMap f (a<span class="fu">:</span>as) <span class="fu">=</span> <span class="kw">do</span>
+   b <span class="ot">&lt;-</span> rpar (f a)
+   bs <span class="ot">&lt;-</span> parMap f as
+   return (b<span class="fu">:</span>bs)
+
+<span class="ot">solve ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></code></pre></div>
+<pre><code>$ ./sudoku3b sudoku17.1000.txt +RTS -N2 -s -RTS
+  TASKS: 4 (1 bound, 3 peak workers (3 total), using -N2)
+  SPARKS: 1000 (1000 converted, 0 overflowed, 0 dud, 0 GC&#39;d, 0 fizzled)
+
+  Total   time    2.84s  (  1.49s elapsed)
+  Productivity  88.9% of total user, 169.6% of total elapsed
+
+-N8: Productivity  78.5% of total user, 569.3% of total elapsed
+N16: Productivity  62.8% of total user, 833.8% of total elapsed
+N32: Productivity  43.5% of total user, 1112.6% of total elapsed</code></pre>
+<h1 id="parallel-fibonacci">Parallel Fibonacci</h1>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">cutoff ::</span> <span class="dt">Int</span>
+cutoff <span class="fu">=</span> <span class="dv">20</span>
+
+parFib n <span class="fu">|</span> n <span class="fu">&lt;</span> cutoff <span class="fu">=</span> fib n
+parFib n <span class="fu">=</span> p <span class="ot">`par`</span> q <span class="ot">`pseq`</span> (p <span class="fu">+</span> q)
+    <span class="kw">where</span>
+      p <span class="fu">=</span> parFib <span class="fu">$</span> n <span class="fu">-</span> <span class="dv">1</span>
+      q <span class="fu">=</span> parFib <span class="fu">$</span> n <span class="fu">-</span> <span class="dv">2</span>
+
+fib n <span class="fu">|</span> n<span class="fu">&lt;</span><span class="dv">2</span> <span class="fu">=</span> n
+fib n <span class="fu">=</span> fib (n <span class="fu">-</span> <span class="dv">1</span>) <span class="fu">+</span> fib (n <span class="fu">-</span> <span class="dv">2</span>)</code></pre></div>
+<pre><code>./parfib +RTS -N60 -s -RTS
+ SPARKS: 118393 (42619 converted, 0 overflowed, 0 dud, 
+                 11241 GC&#39;d, 64533 fizzled)
+
+  Total   time   17.91s  (  0.33s elapsed)
+  Productivity  98.5% of total user, 5291.5% of total elapsed
+
+-N60, cutoff=15
+  SPARKS: 974244 (164888 converted, 0 overflowed, 0 dud, 
+                  156448 GC&#39;d, 652908 fizzled)
+  Total   time   13.59s  (  0.28s elapsed)
+  Productivity  97.6% of total user, 4746.9% of total elapsed</code></pre>
 <h1 id="data-parallel-haskell">Data Parallel Haskell</h1>
 <p>Dokąd chcemy dojść:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE ParallelArrays #-}</span>
