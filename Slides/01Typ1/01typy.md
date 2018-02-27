@@ -18,7 +18,6 @@
 * Programowanie równoległe i współbieżne w Haskellu
     * Programowanie wielordzeniowe i wieloprocesorowe (SMP)
     * Równoległość danych (Data Parallel Haskell)
-* Erlang - programowanie współbieżne i rozproszone
 * Prezentacje projektów
 
 Jakieś życzenia?
@@ -189,9 +188,9 @@ Registering hello-0.1.0.0...
     * Zbudować i uruchomić projekt hello, trochę go zmodyfikować
 
 2. Na students
-   * Można zrobić to samo co powyżej, ale możliwy problem z quota
-   * `stack setup` przy użyciu GHC 7.10 (i może 7.8) z PUBLIC
-   * Reszta jak wyżej
+    * Można zrobić to samo co powyżej, ale możliwy problem z quota
+    * `stack setup` przy użyciu GHC 7.10 (i może 7.8) z PUBLIC
+    * Reszta jak wyżej
    
 # Języki funkcyjne
 * typowane dynamicznie, gorliwe: Lisp
