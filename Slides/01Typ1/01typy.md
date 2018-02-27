@@ -96,8 +96,8 @@ Use --force-reinstalls if you want to install anyway.
 > Stackage is a stable source of Haskell packages. We guarantee that packages build consistently and pass tests before generating nightly and Long Term Support (LTS) releases.
 
 ```
-LTS 10.5 for GHC 8.2.2, published a week ago
-LTS 9.21 for GHC 8.0.2, published a month ago
+LTS 10.7 for GHC 8.2.2, published 3 days ago
+LTS 9.21 for GHC 8.0.2, published 2 months ago
 LTS 7.24 for GHC 8.0.1, published 9 months ago
 LTS 6.35 for GHC 7.10.3, published 9 months ago
 LTS 3.22 for GHC 7.10.2, published 2 years ago
