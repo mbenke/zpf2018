@@ -332,7 +332,7 @@ Chcielibyśmy również mieć
 vappend :: Add m n s => Vec m a -> Vec n a -> Vec s a
 ~~~~
 
-ale tu niestety podstawowy system typów okazuje się za słaby --- więcej za tydzień 
+ale tu niestety podstawowy system typów okazuje się za słaby - więcej wkrótce
 
 # Typy jako język programowania (3)
 
