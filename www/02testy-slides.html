@@ -459,7 +459,8 @@ tests gen rnd0 ntest nfail
 </div>
 <div id="forall" class="slide section level1">
 <h1>forAll</h1>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">evaluate ::</span> <span class="dt">Testable</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Result</span>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | `evaluate` oblicza generator z instancji Testable</span>
+<span class="ot">evaluate ::</span> <span class="dt">Testable</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Result</span>
 evaluate a <span class="fu">=</span> gen <span class="kw">where</span> <span class="dt">Prop</span> gen <span class="fu">=</span> property a 
                        
 <span class="ot">forAll ::</span> (<span class="dt">Show</span> a, <span class="dt">Testable</span> b) <span class="ot">=&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Property</span>

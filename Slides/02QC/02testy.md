@@ -504,6 +504,7 @@ tests gen rnd0 ntest nfail
 # forAll
 
 ~~~~ {.haskell}
+-- | `evaluate` oblicza generator z instancji Testable
 evaluate :: Testable a => a -> Gen Result
 evaluate a = gen where Prop gen = property a 
                        
