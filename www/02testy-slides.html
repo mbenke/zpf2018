@@ -101,6 +101,15 @@ Examples: 2  Tried: 2  Errors: 0  Failures: 1</code></pre>
 <span class="ot">mkName ::</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">NameStyle</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
 mkName reserved style s <span class="fu">=</span> <span class="fu">...</span></code></pre></div>
 </div>
+<div id="dygresja---haddock" class="slide section level1">
+<h1>Dygresja - Haddock</h1>
+<p>Haddock (<a href="http://haskell.org/haddock" class="uri">http://haskell.org/haddock</a>) jest standardowym narzedziem do dokuentowania kodu w Haskellu</p>
+<p>Sekwencja &quot;<code>-- |</code>&quot; (spacja jest istotna) rozpoczyna blok komentarzy, który trafia do dokumentacji</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- |The &#39;square&#39; function squares an integer.</span>
+<span class="co">-- It takes one argument, of type &#39;Int&#39;.</span>
+<span class="ot">square ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+square x <span class="fu">=</span> x <span class="fu">*</span> x</code></pre></div>
+</div>
 <div id="hunit" class="slide section level1">
 <h1>HUnit</h1>
 <p>W większości języków powszechną praktyką jest stosowanie testów jednostkowych.</p>

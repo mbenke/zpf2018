@@ -53,6 +53,18 @@ mkName :: [String] -> NameStyle -> String -> String
 mkName reserved style s = ...
 ```
 
+# Dygresja - Haddock
+
+Haddock (<http://haskell.org/haddock>) jest standardowym narzedziem do dokuentowania kodu w Haskellu
+
+Sekwencja "`-- |`" (spacja jest istotna) rozpoczyna blok komentarzy, który trafia do dokumentacji
+
+``` haskell
+-- |The 'square' function squares an integer.
+-- It takes one argument, of type 'Int'.
+square :: Int -> Int
+square x = x * x
+```
 
 # HUnit
 
