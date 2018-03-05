@@ -281,9 +281,11 @@ $$ p = 1/2 $$
 <span class="ot">chooseInt1 ::</span> (<span class="dt">Int</span>,<span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Int</span>
 chooseInt1 bounds <span class="fu">=</span> <span class="dt">Gen</span> <span class="fu">$</span> \n r  <span class="ot">-&gt;</span> fst (randomR bounds r)
 
+<span class="co">-- | `sized` tworzy generator z rodziny generatorów indeksowanej rozmiarem</span>
 <span class="ot">sized ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
 sized fgen <span class="fu">=</span> <span class="dt">Gen</span> (\n r <span class="ot">-&gt;</span> <span class="kw">let</span> <span class="dt">Gen</span> m <span class="fu">=</span> fgen n <span class="kw">in</span> m n r)
 
+<span class="co">-- | `resize` tworzy generator stałego rozmiaru</span>
 <span class="ot">resize ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
 resize n (<span class="dt">Gen</span> m) <span class="fu">=</span> <span class="dt">Gen</span> (\_ r <span class="ot">-&gt;</span> m n r)</code></pre></div>
 <h1 id="lepsze-arbitrary-dla-tree">Lepsze Arbitrary dla Tree</h1>

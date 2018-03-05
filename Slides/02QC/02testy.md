@@ -343,9 +343,11 @@ newtype Gen a = Gen (Int -> StdGen -> a)
 chooseInt1 :: (Int,Int) -> Gen Int
 chooseInt1 bounds = Gen $ \n r  -> fst (randomR bounds r)
 
+-- | `sized` tworzy generator z rodziny generatorów indeksowanej rozmiarem
 sized :: (Int -> Gen a) -> Gen a
 sized fgen = Gen (\n r -> let Gen m = fgen n in m n r)
 
+-- | `resize` tworzy generator stałego rozmiaru
 resize :: Int -> Gen a -> Gen a
 resize n (Gen m) = Gen (\_ r -> m n r)
 ~~~~
