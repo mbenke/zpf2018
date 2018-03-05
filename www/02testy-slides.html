@@ -512,7 +512,8 @@ Falsifiable, after 0 tests:
 <h1>Generowanie funkcji</h1>
 <p>Potrafimy testować funkcje, ale czy potrafimy wygenerować losową funkcję?</p>
 <p>Zauważmy, że</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Gen</span>(a <span class="ot">-&gt;</span> b) <span class="fu">~</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="fu">~</span> (a <span class="ot">-&gt;</span> <span class="dt">Gen</span> b)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Gen</span> a <span class="fu">~</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> a)
+<span class="dt">Gen</span>(a <span class="ot">-&gt;</span> b) <span class="fu">~</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="fu">~</span> (a <span class="ot">-&gt;</span> <span class="dt">Gen</span> b)</code></pre></div>
 <p>możemy więc napisać funkcję</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">promote ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Gen</span> b) <span class="ot">-&gt;</span> <span class="dt">Gen</span> (a <span class="ot">-&gt;</span> b)
 promote f <span class="fu">=</span> <span class="dt">Gen</span> (\n r <span class="ot">-&gt;</span> \a <span class="ot">-&gt;</span> <span class="kw">let</span> <span class="dt">Gen</span> m <span class="fu">=</span> f a <span class="kw">in</span> m n r)</code></pre></div>

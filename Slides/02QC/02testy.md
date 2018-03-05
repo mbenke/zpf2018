@@ -575,6 +575,7 @@ Potrafimy testować funkcje, ale czy potrafimy wygenerować losową funkcję?
 Zauważmy, że
 
 ~~~~ {.haskell}
+Gen a ~ (Int -> StdGen -> a)
 Gen(a -> b) ~ (Int -> StdGen -> a -> b) ~ (a -> Gen b)
 ~~~~
 
