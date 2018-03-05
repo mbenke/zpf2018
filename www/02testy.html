@@ -416,7 +416,7 @@ forAll gen body <span class="fu">=</span> <span class="dt">Prop</span> <span cla
   argument a res <span class="fu">=</span> res{ arguments <span class="fu">=</span> show a <span class="fu">:</span> arguments res }
 
 
-<span class="ot">propAddCom1 ::</span> <span class="dt">Property</span>
+propAddCom1,<span class="ot"> propAddCom2 ::</span> <span class="dt">Property</span>
 propAddCom1 <span class="fu">=</span>  forAll (chooseInt (<span class="fu">-</span><span class="dv">100</span>,<span class="dv">100</span>)) (\x <span class="ot">-&gt;</span> x <span class="fu">+</span> <span class="dv">1</span> <span class="fu">==</span> <span class="dv">1</span> <span class="fu">+</span> x)
 propAddCom2 <span class="fu">=</span>  forAll int (\x <span class="ot">-&gt;</span> forAll int (\y <span class="ot">-&gt;</span> x <span class="fu">+</span> y <span class="fu">==</span> y <span class="fu">+</span> x)) <span class="kw">where</span>
   int <span class="fu">=</span> chooseInt (<span class="fu">-</span><span class="dv">100</span>,<span class="dv">100</span>)</code></pre></div>

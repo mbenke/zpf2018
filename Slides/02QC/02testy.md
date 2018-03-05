@@ -517,7 +517,7 @@ forAll gen body = Prop $
   argument a res = res{ arguments = show a : arguments res }
 
 
-propAddCom1 :: Property
+propAddCom1, propAddCom2 :: Property
 propAddCom1 =  forAll (chooseInt (-100,100)) (\x -> x + 1 == 1 + x)
 propAddCom2 =  forAll int (\x -> forAll int (\y -> x + y == y + x)) where
   int = chooseInt (-100,100)
