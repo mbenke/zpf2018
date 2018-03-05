@@ -548,7 +548,7 @@ Jeszcze implikacja: jeśli p to q
 ~~~~ {.haskell}
 (==>) :: Testable a => Bool -> a -> Property
 True  ==> a = property a
-False ==> a = property ()
+False ==> a = property () -- nieadekwatne dane
 
 propMul1 :: Int -> Property
 propMul1 x = (x>0) ==> (2*x > 0) 
