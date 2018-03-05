@@ -186,8 +186,7 @@ True
 <h1 id="jak-to-działa">Jak to działa?</h1>
 <p>Dla uproszczenia najpierw przyjrzyjmy się starszej wersji</p>
 <p>Główne składniki</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="ot">quickCheck  ::</span> <span class="dt">Testable</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">quickCheck  ::</span> <span class="dt">Testable</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
 quickCheck   <span class="fu">=</span> check quick
 
 
@@ -203,7 +202,9 @@ quickCheck   <span class="fu">=</span> check quick
   property f <span class="fu">=</span> forAll arbitrary f
 
 <span class="kw">class</span> <span class="dt">Arbitrary</span> a <span class="kw">where</span>
-<span class="ot">  arbitrary   ::</span> <span class="dt">Gen</span> a</code></pre></div>
+<span class="ot">  arbitrary   ::</span> <span class="dt">Gen</span> a
+
+<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Gen</span> <span class="kw">where</span> <span class="fu">...</span></code></pre></div>
 <h1 id="generacja-liczb-losowych">Generacja liczb losowych</h1>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">System.Random</span>
   ( <span class="dt">StdGen</span>       <span class="co">-- :: *</span>

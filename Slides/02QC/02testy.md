@@ -223,7 +223,6 @@ Dla uproszczenia najpierw przyjrzyjmy się starszej wersji
 Główne składniki
 
 ~~~~ {.haskell}
-
 quickCheck  :: Testable a => a -> IO ()
 quickCheck   = check quick
 
@@ -241,6 +240,8 @@ instance (Arbitrary a, Show a, Testable b) => Testable (a -> b) where
 
 class Arbitrary a where
   arbitrary   :: Gen a
+
+instance Monad Gen where ...
 ~~~~
 
 # Generacja liczb losowych
