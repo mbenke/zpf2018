@@ -737,3 +737,27 @@ Run from outside a project, using implicit global project config
 Using resolver: lts-9.21 from implicit global project's config file: /Users/ben/.stack/global/stack.yaml
 Examples: 5  Tried: 5  Errors: 0  Failures: 0
 ```
+
+# Uruchamianie wszystkich testów w module
+
+Funkcja `quickCheckAll` pozwala na przetestowanie wszystkich własności o nazwach zaczynających się od `prop_`. Wykorzystuje do tego TemplateHaskell.
+
+Na kolejnym wykładzie dowiemy się jak działają takie funkcje.
+
+Przykład użycia
+
+``` haskell
+{-# LANGUAGE TemplateHaskell #-}
+import Test.QuickCheck
+
+prop_AddCom3 :: Int -> Int -> Bool  
+prop_AddCom3 x y = x + y == y + x
+
+prop_Mul1 :: Int -> Property
+prop_Mul1 x = (x>0) ==> (2*x > 0) 
+    
+return []
+runTests = $quickCheckAll
+
+main = runTests
+```

@@ -555,5 +555,22 @@ stack exec doctest Fib.hs
 Run from outside a project, using implicit global project config
 Using resolver: lts-9.21 from implicit global project&#39;s config file: /Users/ben/.stack/global/stack.yaml
 Examples: 5  Tried: 5  Errors: 0  Failures: 0</code></pre>
+<h1 id="uruchamianie-wszystkich-testów-w-module">Uruchamianie wszystkich testów w module</h1>
+<p>Funkcja <code>quickCheckAll</code> pozwala na przetestowanie wszystkich własności o nazwach zaczynających się od <code>prop_</code>. Wykorzystuje do tego TemplateHaskell.</p>
+<p>Na kolejnym wykładzie dowiemy się jak działają takie funkcje.</p>
+<p>Przykład użycia</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span>
+<span class="kw">import </span><span class="dt">Test.QuickCheck</span>
+
+<span class="ot">prop_AddCom3 ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>  
+prop_AddCom3 x y <span class="fu">=</span> x <span class="fu">+</span> y <span class="fu">==</span> y <span class="fu">+</span> x
+
+<span class="ot">prop_Mul1 ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Property</span>
+prop_Mul1 x <span class="fu">=</span> (x<span class="fu">&gt;</span><span class="dv">0</span>) <span class="fu">==&gt;</span> (<span class="dv">2</span><span class="fu">*</span>x <span class="fu">&gt;</span> <span class="dv">0</span>) 
+    
+return []
+runTests <span class="fu">=</span> <span class="fu">$</span>quickCheckAll
+
+main <span class="fu">=</span> runTests</code></pre></div>
 </body>
 </html>
