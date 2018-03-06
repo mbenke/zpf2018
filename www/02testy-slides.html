@@ -283,7 +283,7 @@ main <span class="fu">=</span> <span class="kw">do</span>
 <span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Int</span> <span class="kw">where</span>
     arbitrary <span class="fu">=</span> choose (<span class="fu">-</span><span class="dv">100</span>, <span class="dv">100</span>)
 
-<span class="kw">data</span> <span class="dt">Colour</span> <span class="fu">=</span> <span class="dt">Red</span> <span class="fu">|</span> <span class="dt">Green</span> <span class="fu">|</span> blue
+<span class="kw">data</span> <span class="dt">Colour</span> <span class="fu">=</span> <span class="dt">Red</span> <span class="fu">|</span> <span class="dt">Green</span> <span class="fu">|</span> <span class="dt">Blue</span>
 <span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Colour</span> <span class="kw">where</span>
     arbitrary <span class="fu">=</span> oneof [return <span class="dt">Red</span>, return <span class="dt">Green</span>, return <span class="dt">Blue</span>]
 
@@ -523,7 +523,7 @@ promote f <span class="fu">=</span> <span class="dt">Gen</span> (\n r <span clas
 <div id="coarbitrary" class="slide section level1">
 <h1>Coarbitrary</h1>
 <p>Możemy to opisać klasą:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">CoArbitrary</span> <span class="kw">where</span>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">CoArbitrary</span> a <span class="kw">where</span>
 <span class="ot">  coarbitrary ::</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> b <span class="ot">-&gt;</span> <span class="dt">Gen</span> b</code></pre></div>
 <p>Na podstawie wartości argumentu, <code>coarbitrary</code> tworzy transformator generatorów.</p>
 <p>Teraz możemy użyć <code>Coarbitrary</code> by stworzyć <code>Arbitrary</code> dla funkcji:</p>

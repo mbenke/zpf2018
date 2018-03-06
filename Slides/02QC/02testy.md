@@ -300,7 +300,7 @@ oneof :: [Gen a] -> Gen a
 instance Arbitrary Int where
     arbitrary = choose (-100, 100)
 
-data Colour = Red | Green | blue
+data Colour = Red | Green | Blue
 instance Arbitrary Colour where
     arbitrary = oneof [return Red, return Green, return Blue]
 
@@ -594,7 +594,7 @@ Możemy uzyć `promote` do skonstruowania generatora dla funkcji, jeśli tylko p
 Możemy to opisać klasą:
 
 ~~~~ {.haskell}
-class CoArbitrary where
+class CoArbitrary a where
   coarbitrary :: a -> Gen b -> Gen b
 ~~~~
 
