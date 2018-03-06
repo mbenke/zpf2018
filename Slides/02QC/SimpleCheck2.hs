@@ -1,4 +1,4 @@
-module SimpleCheck1 where
+module SimpleCheck2 where
 import System.Random
   ( StdGen       -- :: *
   , newStdGen    -- :: IO StdGen
