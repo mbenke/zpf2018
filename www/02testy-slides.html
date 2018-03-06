@@ -80,7 +80,8 @@ Marcin Benke
 <span class="co">-- | Expect failure</span>
 <span class="co">-- &gt;&gt;&gt; 2 + 2</span>
 <span class="co">-- 5</span></code></pre></div>
-<pre><code>doctest DoctestExamples.hs      
+<pre><code>$ stack install doctest
+$ stack exec doctest DoctestExamples.hs      
 ### Failure in DoctestExamples.hs:7: expression `2 + 2&#39;
 expected: 5
  but got: 4
@@ -621,6 +622,11 @@ OrderedInts [-122,-53,-47,-43,-21,-19,29,53]</code></pre>
 fib <span class="dv">0</span> <span class="fu">=</span> <span class="dv">0</span>
 fib <span class="dv">1</span> <span class="fu">=</span> <span class="dv">1</span>
 fib n <span class="fu">=</span> fib (n <span class="fu">-</span> <span class="dv">1</span>) <span class="fu">+</span> fib (n <span class="fu">-</span> <span class="dv">2</span>)</code></pre></div>
+<pre><code>stack install QuickCheck
+stack exec doctest Fib.hs 
+Run from outside a project, using implicit global project config
+Using resolver: lts-9.21 from implicit global project&#39;s config file: /Users/ben/.stack/global/stack.yaml
+Examples: 5  Tried: 5  Errors: 0  Failures: 0</code></pre>
 </div>
 </body>
 </html>

@@ -30,7 +30,8 @@ module DoctestExamples where
 ```
 
 ```
-doctest DoctestExamples.hs      
+$ stack install doctest
+$ stack exec doctest DoctestExamples.hs      
 ### Failure in DoctestExamples.hs:7: expression `2 + 2'
 expected: 5
  but got: 4
@@ -728,3 +729,11 @@ fib 0 = 0
 fib 1 = 1
 fib n = fib (n - 1) + fib (n - 2)
 ~~~~
+
+```
+stack install QuickCheck
+stack exec doctest Fib.hs 
+Run from outside a project, using implicit global project config
+Using resolver: lts-9.21 from implicit global project's config file: /Users/ben/.stack/global/stack.yaml
+Examples: 5  Tried: 5  Errors: 0  Failures: 0
+```
