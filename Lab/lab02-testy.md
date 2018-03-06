@@ -15,7 +15,7 @@
 
 
 # QuickCheck
-
+* Wypróbuj testy przy uzyciu `doctest` i `HUnit`
 * Napisz kilka testów dla sortowania [Int]
 * Napisz kilka testów sprawdzających własności funkcji na listach (++,concat,map,etc.)
 * Napisz generator dla OrderedInts (posortowanych [Int])
