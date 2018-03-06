@@ -13,6 +13,7 @@
    * `stack setup` przy użyciu GHC 7.10 (i może 7.8) z PUBLIC
    * Reszta jak wyżej
 
+Jeżeli ktoś nie jest w stanie użyć `stack`, można `cabal install doctest HUnit QuickCheck`
 
 # QuickCheck
 * Wypróbuj testy przy uzyciu `doctest` i `HUnit`
