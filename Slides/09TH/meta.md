@@ -1,6 +1,9 @@
-% Zaawansowane programowanie funkcyjne
-% Marcin Benke
-% 8 maja 2018
+---
+title: Zaawansowane programowanie funkcyjne
+subtitle: Template Haskell
+author:  Marcin Benke
+date: 15 maja 2018
+---
 
 # Metaprogramowanie - Template Haskell
 
