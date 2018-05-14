@@ -121,8 +121,23 @@ Prelude Language.Haskell.TH&gt; $(return it)
 &gt; $(return (LitE (IntegerL 42)))
 42
 </code></pre>
+<p>ale:</p>
+<pre><code>&gt; $(return (AppE (VarE GHC.Enum.succ) (LitE (IntegerL 1))))
+
+&lt;interactive&gt;:16:22:
+    Couldn&#39;t match expected type ‘Name’ with actual type ‘a0 -&gt; a0’
+    Probable cause: ‘succ’ is applied to too few arguments
+    In the first argument of ‘VarE’, namely ‘succ’
+    In the first argument of ‘AppE’, namely ‘(VarE succ)’
+Prelude Language.Haskell.TH&gt; $(return (AppE (VarE &quot;GHC.Enum.succ&quot;) (LitE (IntegerL 1))))
+
+&gt; :t VarE
+VarE :: Name -&gt; Exp</code></pre>
 <h1 id="nazwy-wzorce-deklaracje">Nazwy, wzorce, deklaracje</h1>
-<pre><code>&gt; $( return (AppE (VarE (mkName &quot;succ&quot;)) (LitE (IntegerL 1))))
+<pre><code>&gt; :t mkName
+mkName :: String -&gt; Name
+
+&gt; $( return (AppE (VarE (mkName &quot;succ&quot;)) (LitE (IntegerL 1))))
 2
 </code></pre>
 <p>Dotąd budowaliśmy wyrażenia, ale podobnie można budować wzorce, deklaracje, etc.:</p>

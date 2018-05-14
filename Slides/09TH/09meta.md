@@ -102,9 +102,28 @@ Prelude Language.Haskell.TH> $(return it)
 
 ```
 
+ale:
+```
+> $(return (AppE (VarE GHC.Enum.succ) (LitE (IntegerL 1))))
+
+<interactive>:16:22:
+    Couldn't match expected type ‘Name’ with actual type ‘a0 -> a0’
+    Probable cause: ‘succ’ is applied to too few arguments
+    In the first argument of ‘VarE’, namely ‘succ’
+    In the first argument of ‘AppE’, namely ‘(VarE succ)’
+Prelude Language.Haskell.TH> $(return (AppE (VarE "GHC.Enum.succ") (LitE (IntegerL 1))))
+
+> :t VarE
+VarE :: Name -> Exp
+```
+
+
 # Nazwy, wzorce, deklaracje
 
 ```
+> :t mkName
+mkName :: String -> Name
+
 > $( return (AppE (VarE (mkName "succ")) (LitE (IntegerL 1))))
 2
 
