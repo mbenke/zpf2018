@@ -280,6 +280,17 @@ main <span class="fu">=</span> mapM_ print
     [ p2_1 (<span class="dv">1</span>,<span class="dv">2</span>)
     , p2_2 (<span class="dv">1</span>,<span class="dv">2</span>)
     ]</code></pre></div>
+<h1 id="quote-eval-quasiquote">Quote, eval, quasiquote</h1>
+<p>W Lispie mamy quote: <code>'</code> (<code>kod -&gt; dane</code>)</p>
+<pre><code>(+ 1 1)         =&gt; 2
+&#39;(+ 1 1)        =&gt; (list &#39;+ 1 1)
+(eval &#39;(+ 1 1)) =&gt; 2
+(1 2 3)         ERROR
+&#39;(1 2 3)        =&gt; (list 1 2 3)
+&#39;(1 (+ 1 1) 3)  =&gt; (list 1 &#39;(+ 1 1) 3)</code></pre>
+<p>oraz nieco bardziej skomplikowane quasiquote <code>`</code></p>
+<pre><code>`(1 ,(+ 1 1) 3) =&gt; (list 1 2 3)</code></pre>
+<p>dające możliwość ewaluacji wybranych framgentów zacytowanego kodu</p>
 <h1 id="quasiquoting">Quasiquoting</h1>
 <p>Widzieliśmy już standardowe quasiqotery e, t, d,p (np. <code>[e| \x -&gt; x +1|]</code> ). Ale możemy też definiować własne:</p>
 <pre><code>longString = [str|This is a multiline string.

@@ -326,6 +326,27 @@ main = mapM_ print
     ]
 ```
 
+# Quote, eval, quasiquote
+
+W Lispie mamy quote: `'` (`kod -> dane`)
+
+```
+(+ 1 1)         => 2
+'(+ 1 1)        => (list '+ 1 1)
+(eval '(+ 1 1)) => 2
+(1 2 3)         ERROR
+'(1 2 3)        => (list 1 2 3)
+'(1 (+ 1 1) 3)  => (list 1 '(+ 1 1) 3)
+```
+
+oraz nieco bardziej skomplikowane quasiquote ` ` `
+
+```
+`(1 ,(+ 1 1) 3) => (list 1 2 3)
+```
+
+dające możliwość ewaluacji wybranych framgentów zacytowanego kodu
+
 # Quasiquoting
 
 Widzieliśmy już standardowe quasiqotery e, t, d,p (np. `[e| \x -> x +1|]` ).
