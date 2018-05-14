@@ -230,7 +230,9 @@ newName :: String -> Q Name
 
 (co przy okazji wyjasnia jeden z powodów, dla których [Q](http://hackage.haskell.org/packages/archive/template-haskell/2.9.0.0/doc/html/Language-Haskell-TH.html#t:Q) jest monadą.)
 
-Przy użyciu `newName` możemy uodpornić nasz przyklad na konflikty nazw. Zauważmy jednak, że `p1` jest globalne i musi nadal używać `mkName`, natomiast `a` i `b` mogą być dowolnymi nazwami, więc wygenerujemy je przy użyciu `newName`.
+Przy użyciu `newName` możemy uodpornić nasz przyklad na konflikty nazw.
+
+Zauważmy jednak, że `p1` jest globalne i musi nadal używać `mkName`, natomiast `a` i `b` mogą być dowolnymi nazwami, więc wygenerujemy je przy użyciu `newName`.
 
 # Build2
 

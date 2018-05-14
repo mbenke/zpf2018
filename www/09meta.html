@@ -210,7 +210,8 @@ main <span class="fu">=</span> <span class="kw">do</span>
 <p>Na szczęście TH dostarcza funkcję <a href="http://hackage.haskell.org/packages/archive/template-haskell/2.9.0.0/doc/html/Language-Haskell-TH.html#v:newName">newName</a>:</p>
 <pre><code>newName :: String -&gt; Q Name</code></pre>
 <p>(co przy okazji wyjasnia jeden z powodów, dla których <a href="http://hackage.haskell.org/packages/archive/template-haskell/2.9.0.0/doc/html/Language-Haskell-TH.html#t:Q">Q</a> jest monadą.)</p>
-<p>Przy użyciu <code>newName</code> możemy uodpornić nasz przyklad na konflikty nazw. Zauważmy jednak, że <code>p1</code> jest globalne i musi nadal używać <code>mkName</code>, natomiast <code>a</code> i <code>b</code> mogą być dowolnymi nazwami, więc wygenerujemy je przy użyciu <code>newName</code>.</p>
+<p>Przy użyciu <code>newName</code> możemy uodpornić nasz przyklad na konflikty nazw.</p>
+<p>Zauważmy jednak, że <code>p1</code> jest globalne i musi nadal używać <code>mkName</code>, natomiast <code>a</code> i <code>b</code> mogą być dowolnymi nazwami, więc wygenerujemy je przy użyciu <code>newName</code>.</p>
 <h1 id="build2">Build2</h1>
 <pre><code>{-# START_FILE Build2.hs #-}
 {-# LANGUAGE TemplateHaskell #-}
