@@ -21,8 +21,23 @@ Write a function `tupleFromList` such that
 tupleFromList 8 [1..8] == (1,2,3,4,5,6,7,8) 
 ```
 
-# Quasiquotation
+# Quasiquotation 1
 
+write a `matrix` quasiquoter such that
+
+```
+*MatrixSplice> :{
+*MatrixSplice| [matrix|
+*MatrixSplice| 1 2
+*MatrixSplice| 3 4
+*MatrixSplice| |]
+*MatrixSplice| :}
+[[1,2],[3,4]]
+```
+
+be careful with blank lines!
+
+# Quasiquotation 2
 * Extend the expression simplifier with more rules.
 
 * Extend the expression quasiquoter to handle metavariables for
