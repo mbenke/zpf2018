@@ -568,7 +568,7 @@ testTwice = twice [expr| 3 * 3|]
 
 This is nothing revolutionary. Haskell however, uses variables not only in expressions, but also in patterns, and here the story becomes a little interesting.
 
-# Metavariables
+# Extending quasiquoters 
 
 Recall the pattern quasiquoter:
 
@@ -576,13 +576,38 @@ Recall the pattern quasiquoter:
 quoteExprPat :: String -> TH.Q TH.Pat
 quoteExprPat s = do
   pos <- getPosition
-    exp <- parseExp pos s
-      dataToPatQ (const Nothing) exp
-
+  exp <- parseExp pos s
+  dataToPatQ (const Nothing) exp
 ```
 
-You might have wondered about the `const Nothing` previously, and that is exactly the place we may add own extensions to the standard `Data` to `Pat` translation.
+The `const Nothing` is a placeholder for extensions to the standard `Data` to `Pat` translation:
 
+``` haskell
+quoteExprExp s = do
+  pos <- getPosition
+  exp <- parseExp pos s
+  dataToExpQ (const Nothing  `extQ` antiExprExp) exp
+```
+
+# What’s function extension?
+You have
+
+* a generic query
+```
+gen :: Data a => a -> R
+```
+* a type-specific query
+```
+spec :: T -> R
+```
+
+You want a generic function which behaves like spec on values of type T,
+and like gen on all other values
+```
+gen `extQ` spec :: Data a => a -> R
+```
+
+# Metavariables
 Let us extend our expression syntax and parser with metavariables (variables from the metalanguage):
 
 ```haskell

@@ -428,14 +428,29 @@ twice e = [expr| $e + $e |]
 
 testTwice = twice [expr| 3 * 3|]</code></pre>
 <p>This is nothing revolutionary. Haskell however, uses variables not only in expressions, but also in patterns, and here the story becomes a little interesting.</p>
-<h1 id="metavariables">Metavariables</h1>
+<h1 id="extending-quasiquoters">Extending quasiquoters</h1>
 <p>Recall the pattern quasiquoter:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">quoteExprPat ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">TH.Q</span> <span class="dt">TH.Pat</span>
 quoteExprPat s <span class="fu">=</span> <span class="kw">do</span>
   pos <span class="ot">&lt;-</span> getPosition
-    exp <span class="ot">&lt;-</span> parseExp pos s
-      dataToPatQ (const <span class="dt">Nothing</span>) exp</code></pre></div>
-<p>You might have wondered about the <code>const Nothing</code> previously, and that is exactly the place we may add own extensions to the standard <code>Data</code> to <code>Pat</code> translation.</p>
+  exp <span class="ot">&lt;-</span> parseExp pos s
+  dataToPatQ (const <span class="dt">Nothing</span>) exp</code></pre></div>
+<p>The <code>const Nothing</code> is a placeholder for extensions to the standard <code>Data</code> to <code>Pat</code> translation:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">quoteExprExp s <span class="fu">=</span> <span class="kw">do</span>
+  pos <span class="ot">&lt;-</span> getPosition
+  exp <span class="ot">&lt;-</span> parseExp pos s
+  dataToExpQ (const <span class="dt">Nothing</span>  <span class="ot">`extQ`</span> antiExprExp) exp</code></pre></div>
+<h1 id="whats-function-extension">What’s function extension?</h1>
+<p>You have</p>
+<ul>
+<li><p>a generic query</p>
+<pre><code>gen :: Data a =&gt; a -&gt; R</code></pre></li>
+<li><p>a type-specific query</p>
+<pre><code>spec :: T -&gt; R</code></pre></li>
+</ul>
+<p>You want a generic function which behaves like spec on values of type T, and like gen on all other values</p>
+<pre><code>gen `extQ` spec :: Data a =&gt; a -&gt; R</code></pre>
+<h1 id="metavariables">Metavariables</h1>
 <p>Let us extend our expression syntax and parser with metavariables (variables from the metalanguage):</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Exp</span> <span class="fu">=</span>  <span class="fu">...</span> <span class="fu">|</span> <span class="dt">EMetaVar</span> <span class="dt">String</span>
            <span class="kw">deriving</span>(<span class="dt">Show</span>,<span class="dt">Typeable</span>,<span class="dt">Data</span>)
