@@ -101,6 +101,8 @@ str <span class="fu">=</span> <span class="dt">QuasiQuoter</span> { quoteExp <sp
 <pre><code>$ ghci -XTemplateHaskell
 
 &gt; :m +Language.Haskell.TH
+
+
 &gt; runQ [| \x -&gt; 1 |]
 
 LamE [VarP x_0] (LitE (IntegerL 1))
@@ -109,9 +111,25 @@ LamE [VarP x_0] (LitE (IntegerL 1))
 it :: Exp
 
 &gt; runQ [| \x -&gt; x + 1 |]  &gt;&gt;= putStrLn . pprint
-\x_0 -&gt; x_0 GHC.Num.+ 1
+\x_0 -&gt; x_0 GHC.Num.+ 1</code></pre>
+<h1 id="q-runq">Q, runQ</h1>
+<pre><code>&gt; :t [| \x -&gt; 1 |]
+[| \x -&gt; 1 |] :: ExpQ
+&gt; :i ExpQ
+type ExpQ = Q Exp   -- Defined in ‘Language.Haskell.TH.Lib’
+
+&gt; :i Q
+newtype Q a = ... -- Defined in ‘Language.Haskell.TH.Syntax’
+instance Monad Q 
+instance Functor Q
+
 &gt; :t runQ
-runQ :: Language.Haskell.TH.Syntax.Quasi m =&gt; Q a -&gt; m a</code></pre>
+runQ :: Language.Haskell.TH.Syntax.Quasi m =&gt; Q a -&gt; m a
+
+&gt;: i Quasi
+class MonadFail m =&gt; Quasi (m :: * -&gt; *) where ...
+instance Quasi Q 
+instance Quasi IO</code></pre>
 <h1 id="wklejanie-drzew-struktury-do-programu">Wklejanie drzew struktury do programu</h1>
 <pre><code>&gt; runQ [| succ 1 |]
 AppE (VarE GHC.Enum.succ) (LitE (IntegerL 1))

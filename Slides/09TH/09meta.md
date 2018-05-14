@@ -76,6 +76,8 @@ Ten [tutorial](http://www.hyperedsoftware.com/blog/entries/first-stab-th.html) p
 $ ghci -XTemplateHaskell
 
 > :m +Language.Haskell.TH
+
+
 > runQ [| \x -> 1 |]
 
 LamE [VarP x_0] (LitE (IntegerL 1))
@@ -85,8 +87,28 @@ it :: Exp
 
 > runQ [| \x -> x + 1 |]  >>= putStrLn . pprint
 \x_0 -> x_0 GHC.Num.+ 1
+```
+
+# Q, runQ
+
+```
+> :t [| \x -> 1 |]
+[| \x -> 1 |] :: ExpQ
+> :i ExpQ
+type ExpQ = Q Exp 	-- Defined in ‘Language.Haskell.TH.Lib’
+
+> :i Q
+newtype Q a = ... -- Defined in ‘Language.Haskell.TH.Syntax’
+instance Monad Q 
+instance Functor Q
+
 > :t runQ
 runQ :: Language.Haskell.TH.Syntax.Quasi m => Q a -> m a
+
+>: i Quasi
+class MonadFail m => Quasi (m :: * -> *) where ...
+instance Quasi Q 
+instance Quasi IO
 ```
 
 # Wklejanie drzew struktury do programu
