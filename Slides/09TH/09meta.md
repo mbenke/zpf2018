@@ -551,3 +551,18 @@ simpl [expr|$int:n$ + $int:m$|] = [expr| $int:m+n$ |]
 ```
 
 (you are welcome to invent your own syntax in place of `$int: ... $`)
+
+# Projekty zaliczeniowe
+
+Haskell: **prosty** projekt 1-3 osobowy
+
+Prezentacje projektów 12 czerwca.
+
+Przykładowe tematy:
+
+* wykorzystanie technik prezentowanych na wykładzie, np. Template Haskell, równoległość, typy zależne
+* wizualizacja ewaluacji w Haskellu - coś na kształt <https://github.com/bmillwood/stepeval>
+* synteza funkcji podanego typu (rachunek lambda lub Haskell), ew. spełniającej podane testy (to może być trudne, wystarczy zrobić w ograniczonym zakresie); warto wykorzystać równoległość
+
+Alternatywnie: prezentacja na wykładzie (z elementami do przećwiczenia na laboratorium)
+
