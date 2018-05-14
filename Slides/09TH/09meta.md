@@ -388,12 +388,16 @@ Let's start with a simple data type and parser for arithmetic expressions
 
 
 ``` { .haskell }
+{-# LANGUAGE DeriveDataTypeable #-}
+
 data Exp = EInt Int
-         | EAdd Exp Exp
-	     | ESub Exp Exp
-		 | EMul Exp Exp
-		 | EDiv Exp Exp
-		 deriving(Show,Typeable,Data)
+  | EAdd Exp Exp
+  | ESub Exp Exp
+  | EMul Exp Exp
+  | EDiv Exp Exp
+    deriving(Show,Typeable,Data)
+-- deriving Data needed to use generic function
+-- liftData :: Data a => a -> ExpQ
 
 pExp :: Parser Exp
 -- ...
@@ -402,7 +406,7 @@ test1 = parse pExp "test1" "1 - 2 - 3 * 4 "
 main = print test1
 ```
 
-# Testowanie
+# Testing
 
 Now let's say we need some expresion trees in our program. For this kind of expressions we could (almost) get by  with `class Num` hack:
 
@@ -484,7 +488,12 @@ getPosition = fmap transPos TH.location where
 	                       snd (TH.loc_start loc))
 ```
 
-Parsing is done using our expression parser introduced at the beginning - nothing exciting here, but then comes the last part: generating Template Haskell, which seems like quite a task. Luckily we can save us some work using facilities for generic programming provided by [Data.Data](http://hackage.haskell.org/packages/archive/base/4.6.0.1/doc/html/Data-Data.html) combined with an almost magical Template Haskell function [dataToExpQ](http://hackage.haskell.org/packages/archive/template-haskell/latest/doc/html/Language-Haskell-TH-Quote.html#v:dataToExpQ).
+Parsing is done using our expression parser but generating Template Haskell seems like quite a task. Luckily we can save us some work use facilities for generic programming provided by [Data.Data](http://hackage.haskell.org/packages/archive/base/4.6.0.1/doc/html/Data-Data.html) combined with an almost magical Template Haskell function [dataToExpQ](http://hackage.haskell.org/packages/archive/template-haskell/latest/doc/html/Language-Haskell-TH-Quote.html#v:dataToExpQ), or a simpler
+
+```
+liftData :: Data a => a -> Q Exp
+```
+
 
 
 # Quasiquoting patterns
