@@ -331,6 +331,13 @@ main = putStrLn longString</code></pre>
 <span class="kw">import </span><span class="dt">Language.Haskell.TH.Quote</span>
  
 str <span class="fu">=</span> <span class="dt">QuasiQuoter</span> { quoteExp <span class="fu">=</span> stringE }</code></pre></div>
+<pre><code>&gt; :i QuasiQuoter
+data QuasiQuoter
+  = QuasiQuoter {quoteExp :: String -&gt; Q Exp,
+                 quotePat :: String -&gt; Q Pat,
+                 quoteType :: String -&gt; Q Type,
+                 quoteDec :: String -&gt; Q [Dec]}
+    -- Defined in ‘Language.Haskell.TH.Quote’</code></pre>
 </div>
 <div id="parsing-expressions" class="slide section level1">
 <h1>Parsing Expressions</h1>

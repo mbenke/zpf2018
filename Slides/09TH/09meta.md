@@ -351,6 +351,16 @@ import Language.Haskell.TH.Quote
 str = QuasiQuoter { quoteExp = stringE }
 ```
 
+```
+> :i QuasiQuoter
+data QuasiQuoter
+  = QuasiQuoter {quoteExp :: String -> Q Exp,
+                 quotePat :: String -> Q Pat,
+                 quoteType :: String -> Q Type,
+                 quoteDec :: String -> Q [Dec]}
+  	-- Defined in ‘Language.Haskell.TH.Quote’
+```
+
 # Parsing Expressions
 
 Let's start with a simple data type and parser for arithmetic expressions

@@ -296,6 +296,13 @@ main = putStrLn longString</code></pre>
 <span class="kw">import </span><span class="dt">Language.Haskell.TH.Quote</span>
  
 str <span class="fu">=</span> <span class="dt">QuasiQuoter</span> { quoteExp <span class="fu">=</span> stringE }</code></pre></div>
+<pre><code>&gt; :i QuasiQuoter
+data QuasiQuoter
+  = QuasiQuoter {quoteExp :: String -&gt; Q Exp,
+                 quotePat :: String -&gt; Q Pat,
+                 quoteType :: String -&gt; Q Type,
+                 quoteDec :: String -&gt; Q [Dec]}
+    -- Defined in ‘Language.Haskell.TH.Quote’</code></pre>
 <h1 id="parsing-expressions">Parsing Expressions</h1>
 <p>Let's start with a simple data type and parser for arithmetic expressions</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Exp</span> <span class="fu">=</span> <span class="dt">EInt</span> <span class="dt">Int</span>
