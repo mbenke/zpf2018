@@ -18,7 +18,7 @@ should print 4.
 Write a function `tupleFromList` such that
 
 ```
-tupleFromList 8 [1..8] == (1,2,3,4,5,6,7,8) 
+$(tupleFromList 8) [1..8] == (1,2,3,4,5,6,7,8) 
 ```
 
 # Quasiquotation 1
