@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+ -- {- # LANGUAGE TemplateHaskell #-}
 module Build3 where
 import Language.Haskell.TH
 
