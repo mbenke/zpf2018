@@ -53,12 +53,18 @@ putMVar  :: MVar a -> a -> IO ()
 readMVar :: MVar a -> IO a  --  Atomic read
 ~~~~
 
-`stdout` is guarded by an MVar, hence A and B in the previous example
+`stdout` is guarded by an `MVar`, hence `A` and `B` in the previous example
 come more or less evenly.
 
-`takeMVar` wakes one thread
+* `takeMVar` is single-wakeup.  That is, if there are multiple
+   threads blocked in `takeMVar`, and the `MVar` becomes full,
+   only one thread will be woken up.  The runtime guarantees that
+   the woken thread completes its `takeMVar` operation.
+* When multiple threads are blocked on an `MVar`, they are
+   woken up in FIFO order.
+* `readMVar` is multiple-wakeup, so when multiple readers are
+   blocked on an `MVar`, all of them are woken up at the same time.
 
-`readMVar` wakes all threads waiting on this `MVar`
 
 # Asynchronous I/O
 
