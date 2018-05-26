@@ -69,7 +69,9 @@ come more or less evenly.
 # Asynchronous I/O
 
 ~~~~ {.haskell}
-import GetURL(getURL)
+import GetURL
+  ( getURL -- :: String -> IO ByteString
+  )
 import Control.Concurrent
 
 main = do
