@@ -157,6 +157,8 @@ downloaded: http://www.yahoo.com (79788 bytes, 0.020s)
 
 # IORef
 
+A mutable variable in the IO monad:
+
 ~~~~ {.haskell}
 data IORef a
 newIORef :: a -> IO (IORef a)
