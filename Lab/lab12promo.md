@@ -96,3 +96,22 @@ atIndex (_:>xs) (FinS k) = atIndex xs k
 -- Question - why not:
 -- atIndex :: Vec (S n) a -> ... ?
 ```
+
+# Replicate
+
+Spróbujmy stworzyć analog funkcji `replicate :: Int -> a -> [a]`
+
+``` {.haskell}
+vreplicate :: Nat -> a -> Vec n a
+vreplicate Z _ = Vnil -- fail on oh, so many levels
+```
+
+dokładniej
+
+``` {.haskell}
+vreplicate2 :: (n::Nat) -> a -> Vec n a
+```
+
+...ale nie ma wartości typu rodzaju `Nat`
+
+*Ćwiczenie:* wypróbować różne varianty `vreplicate`
