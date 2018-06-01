@@ -75,3 +75,24 @@ vapp (Vcons x xs) ys = Vcons x (vapp xs ys)
 type family (n :: Nat) :* (m :: Nat) :: Nat
 ```
 
+# Indeksowanie
+
+``` haskell
+-- |
+-- Indexing
+-- >>> (1:>V0) `atIndex` FinZ
+-- 1
+--
+-- atIndex :: Vec n a -> (m < n) -> a
+
+data Fin n where
+    FinZ :: Fin ('S n) -- zero is less than any successor
+    FinS :: Fin n -> Fin ('S n) -- n is less than (n+1)
+
+atIndex :: Vec n a -> Fin n -> a
+atIndex (x:>_) FinZ = x
+atIndex (_:>xs) (FinS k) = atIndex xs k
+
+-- Question - why not:
+-- atIndex :: Vec (S n) a -> ... ?
+```
