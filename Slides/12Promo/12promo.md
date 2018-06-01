@@ -211,6 +211,7 @@ data Vec :: Nat -> * -> * where
   Vcons :: a -> Vec n a -> Vec ('S n) a
 
 vhead :: Vec (S n) a -> a
+-- Jakiego typu ma być vtail?
 ```
 
 ``` {.haskell}
@@ -272,7 +273,7 @@ error: …
       from the context: m ~ Zero
 ```
 
-Kompilator ``nie wie'', że jeśli `m = 0` to `s = n`
+Kompilator ''nie wie'', że jeśli `m = 0` to `s = n`
 
 # Rodziny typów
 
