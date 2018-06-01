@@ -115,3 +115,24 @@ vreplicate2 :: (n::Nat) -> a -> Vec n a
 ...ale nie ma wartości typu rodzaju `Nat`
 
 *Ćwiczenie:* wypróbować różne varianty `vreplicate`
+
+# Singleton
+
+``` {.haskell}
+data Nat :: * where
+  Z :: Nat
+  S :: Nat -> Nat
+
+data SNat n where
+  SZ :: SNat Z
+  SS :: SNat n -> SNat (S n)
+deriving instance Show(SNat n)
+
+add :: (SNat m) -> (SNat n) -> SNat(m :+ n)
+add SZ n = n
+add (SS m) n = SS (add m n)
+```
+**Ćwiczenie:** zdefiniować mnożenie
+``` {.haskell}
+mul :: (SNat m) -> (SNat n) -> SNat(m :* n)
+```
