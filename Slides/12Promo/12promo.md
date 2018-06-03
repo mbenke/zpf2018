@@ -1,6 +1,9 @@
-% Zaawansowane programowanie funkcyjne
-% Marcin Benke
-% 4 czerwca 2018
+---
+title: Zaawansowane programowanie funkcyjne
+author:  Marcin Benke
+date: 4 czerwca 2018
+---
+
 <meta name="duration" content="80" />
 
 # Plan
