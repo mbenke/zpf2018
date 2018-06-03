@@ -43,20 +43,7 @@
 ```
 
 8. TypeApplication
-
-9. Aplikacja wektorowa
-```
-   type family Arity (n::Nat) (a::*) :: *
-   vap :: Arity n a -> Vec n a -> a
-```
    
-10. Zależności implicite
-```
-   class NATTY (n::Nat)
-   vtrunc :: NATTY m => Proxy n -> Vec (m :+ n) a -> Vec m a
-```
-
-11. Biblioteka `singletons`
 
 # Rodzaje (kinds)
 
@@ -387,8 +374,6 @@ nth :: (m:<n) ~ 'True => SNat m -> Vec n a -> a
 nth SZ (a:>_)  = a
 nth (SS m') (_:>xs) = nth m' xs
 ```
-
-# Bilioteka singletons
 
 # vchop3
 
