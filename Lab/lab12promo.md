@@ -136,3 +136,9 @@ add (SS m) n = SS (add m n)
 ``` {.haskell}
 mul :: (SNat m) -> (SNat n) -> SNat(m :* n)
 ```
+
+**Ćwiczenie:** zdefiniować
+
+``` {.haskell}
+vcycle :: SNat n -> Vec m a -> Vec (n:*m) a
+```
