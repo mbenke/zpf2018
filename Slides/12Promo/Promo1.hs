@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE DataKinds, KindSignatures, PolyKinds #-}
 {-# LANGUAGE TypeFamilies, TypeOperators #-}
@@ -30,6 +32,16 @@ data Nat :: * where
 data HList :: [*] -> * where
   HNil  :: HList '[]
   HCons :: a -> HList t -> HList (a ': t)
+
+instance Show (HList '[]) where
+  show _ = "H[]"
+
+instance (Show e, Show (HList l)) => Show (HList (e ': l)) where
+    show (HCons x l) = let 'H':'[':s = show l
+                       in "H[" ++ show x ++
+                                  (if s == "]" then s else "," ++ s)
+
+-- deriving instance (Show a, Show (HList t)) => Show (HList (a ': t))
 
 data Tuple :: (*,*) -> * where
   Tuple :: a -> b -> Tuple '(a,b)
