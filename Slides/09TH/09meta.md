@@ -15,7 +15,7 @@ Interaktywne tutoriale na  [School of Haskell](https://www.schoolofhaskell.com/)
 
 * Code/TH/Projections
 
-* [Quasiquotation](https://www.fpcomplete.com/user/marcin/quasiquotation-101)
+* [Quasiquotation](https://www.schoolofhaskell.com/user/marcin/quasiquotation-101)
 
 * Code/TH/QQ
 
