@@ -70,7 +70,7 @@ Spróbujmy zrozumieć o co chodzi...
 
 # Parsowanie kodu w trakcie wykonania
 
-Ten [tutorial](http://www.hyperedsoftware.com/blog/entries/first-stab-th.html) poleca eksperymenty w GHCi:
+Ten [tutorial](https://web.archive.org/web/20180501004533/http://www.hyperedsoftware.com:80/blog/entries/first-stab-th.html) poleca eksperymenty w GHCi:
 
 ```
 $ ghci -XTemplateHaskell
