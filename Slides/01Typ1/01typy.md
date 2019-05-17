@@ -57,14 +57,14 @@ export PATH=$(stack path --local-bin):$PATH
 
 ```
 [ben@students Haskell]$ cabal update
-Downloading the latest package list 
+Downloading the latest package list
   from hackage.haskell.org
 [ben@students Haskell]$ cabal install GLFW
 ...kompilacja...
-Installing library in 
+Installing library in
  /home/staff/iinf/ben/.cabal/lib/GLFW-0.4.2/ghc-6.10.4
 Registering GLFW-0.4.2...
-Reading package info from "dist/installed-pkg-config" 
+Reading package info from "dist/installed-pkg-config"
  ... done.
 Writing new package config file... done.
 ```
@@ -109,7 +109,7 @@ LTS 0.7 for GHC 7.8.3, published 3 years ago
 $ stack --resolver lts-3.22 install criterion
 Run from outside a project, using implicit global project config
 Using resolver: lts-3.22 specified on command line
-Downloaded lts-3.22 build plan.    
+Downloaded lts-3.22 build plan.
 mtl-2.2.1: using precompiled package
 ...
 criterion-1.1.0.0: download
@@ -192,7 +192,7 @@ Registering hello-0.1.0.0...
     * `stack setup` przy użyciu GHC 7.10 (i może 7.8) z PUBLIC
     * `stack config set system-ghc --global true`
     * Reszta jak wyżej
-   
+
 # Języki funkcyjne
 * typowane dynamicznie, gorliwe: Lisp
 * typowane statycznie, gorliwe, nieczyste: ML
@@ -229,7 +229,7 @@ Jeśli `(f x)` daje wynik, to musi nim być `x`
     main = do
       r <- f 42
       j <- readIORef r
-      print j    
+      print j
     ~~~~
 
 
@@ -244,13 +244,13 @@ Liczby Fibonacciego w stałej pamięci
 import Control.Monad.ST
 import Data.STRef
 fibST :: Integer -> Integer
-fibST n = 
+fibST n =
     if n < 2 then n else runST fib2 where
       fib2 =  do
         x <- newSTRef 0
         y <- newSTRef 1
         fib3 n x y
- 
+
       fib3 0 x _ = readSTRef x
       fib3 n x y = do
               x' <- readSTRef x
@@ -304,7 +304,7 @@ jest czysta.
       add = undefined
     instance              Add  Zero    b  b
     instance Add a b c => Add (Succ a) b (Succ c)
-    ~~~~ 
+    ~~~~
 
     ~~~~
     *Main> :t add three one
@@ -318,7 +318,7 @@ Wektory przy użyciu klas:
 
 ~~~~ {.haskell}
 data Vec :: * -> * -> * where
-  VNil :: Vec Zero a  
+  VNil :: Vec Zero a
   (:>) :: a -> Vec n a -> Vec (Succ n) a
 
 vhead :: Vec (Succ n) a -> a
@@ -348,7 +348,7 @@ ale tu niestety podstawowy system typów okazuje się za słaby - więcej wkrót
     type instance (Suc m) :+ n = Suc(m:+n)
 
     data Vec :: * -> * -> * where
-      VNil :: Vec Zero a  
+      VNil :: Vec Zero a
       (:>) :: a -> Vec n a -> Vec (Suc n) a
 
     vhead :: Vec (Suc n) a -> a
@@ -455,14 +455,14 @@ fib n = fib (n - 1) + fib (n - 2)
 
 ~~~~
 ./parfib +RTS -N60 -s -RTS
- SPARKS: 118393 (42619 converted, 0 overflowed, 0 dud, 
+ SPARKS: 118393 (42619 converted, 0 overflowed, 0 dud,
                  11241 GC'd, 64533 fizzled)
 
   Total   time   17.91s  (  0.33s elapsed)
   Productivity  98.5% of total user, 5291.5% of total elapsed
 
 -N60, cutoff=15
-  SPARKS: 974244 (164888 converted, 0 overflowed, 0 dud, 
+  SPARKS: 974244 (164888 converted, 0 overflowed, 0 dud,
                   156448 GC'd, 652908 fizzled)
   Total   time   13.59s  (  0.28s elapsed)
   Productivity  97.6% of total user, 4746.9% of total elapsed
@@ -470,7 +470,7 @@ fib n = fib (n - 1) + fib (n - 2)
 
 # Data Parallel Haskell
 
-Dokąd chcemy dojść: 
+Dokąd chcemy dojść:
 
 ~~~~ {.haskell}
 {-# LANGUAGE ParallelArrays #-}
@@ -503,13 +503,13 @@ Po drodze czeka nas jednak trochę pracy.
     g :: forall b.b -> b
     ~~~~
 
-* typy algebraiczne 
+* typy algebraiczne
 
     ~~~~ {.haskell}
     data Tree a = Leaf | Node a (Tree a) (Tree a)
     ~~~~
 
-* `Leaf` i `Node` są konstruktorami wartości: 
+* `Leaf` i `Node` są konstruktorami wartości:
 
     ~~~~ {.haskell}
     data Tree a where
@@ -524,21 +524,21 @@ Po drodze czeka nas jednak trochę pracy.
     ~~~~ {.haskell}
     data Zero
     ~~~~
-  
+
 # Typowanie polimorficzne
 
 * Generalizacja:
 
 $${\Gamma \vdash e :: t, a \notin FV( \Gamma )}\over {\Gamma \vdash e :: \forall a.t}$$
 
- <!-- 
+ <!--
 Jeśli $\Gamma \vdash e :: t, a \notin FV( \Gamma )$
- 
+
 to $\Gamma \vdash e :: \forall a.t$
 
   Γ ⊢ e :: t, a∉FV(Γ)
 $$\Gamma \vdash e :: t$$ ,
- \(a \not\in FV(\Gamma) \) , 
+ \(a \not\in FV(\Gamma) \) ,
 to $\Gamma \vdash e :: \forall a.t$
 -->
 
@@ -555,7 +555,7 @@ $$ f : a \to b \not \vdash map\; f :: \forall b. [a] \to [b]  $$
 * Instancjacja
 
 $$ {\Gamma \vdash e :: \forall a.t}\over {\Gamma \vdash e :: t[a:=s]} $$
- 
+
 # Klasy
 
 * klasy opisują własności typów
@@ -570,14 +570,14 @@ $$ {\Gamma \vdash e :: \forall a.t}\over {\Gamma \vdash e :: t[a:=s]} $$
 
     class Eq a => Ord a where ...
     ~~~~
-    
+
 * funkcje mogą być definiowane w kontekście klas:
 
     ~~~~ {.haskell}
     elem :: Eq a => a -> [a] -> Bool
     ~~~~
 
-+ Implementacja 
++ Implementacja
     - instancja tłumaczona na słownik metod (coś \'a la  vtable w C++)
     - kontekst (np Eq a) jest tłumaczony na ukryty parametr (słownik metod )
     - podklasa tłumaczona na funkcję
@@ -601,7 +601,7 @@ $$ {\Gamma \vdash e :: \forall a.t}\over {\Gamma \vdash e :: t[a:=s]} $$
 
 ~~~~ {.haskell}
 newtype IdentityT m a = IdentityT { runIdentityT :: m a }
-~~~~ 
+~~~~
 
 # Klasy konstruktorowe
 
@@ -621,7 +621,7 @@ newtype IdentityT m a = IdentityT { runIdentityT :: m a }
        pure = (:[])
 
     class Pointed f => Applicative f where
-      (<*>) :: f(a->b) -> f a -> f b 
+      (<*>) :: f(a->b) -> f a -> f b
 
     instance Applicative [] where
       fs <*> xs = concat $ flip map fs (flip map xs)
@@ -630,10 +630,10 @@ newtype IdentityT m a = IdentityT { runIdentityT :: m a }
       (>>=) :: m a -> (a -> m b) -> m b
     ~~~~
 
-<!-- 
+<!--
 
     class Pointed f => Applicative f where
-      (<*>) :: f(a->b) -> f a -> f b 
+      (<*>) :: f(a->b) -> f a -> f b
       (*>) :: f a -> f b -> f b
       x *> y = (flip const) <$> x <*> y
       (<*) :: f a -> f b -> f a
@@ -679,7 +679,7 @@ NB spacje są niezbędne - `::*->*` jest jednym leksemem.
     class Iso a b where
       iso :: a -> b
       osi :: b -> a
-      
+
     instance Iso a a where
       iso = id
       osi = id
@@ -693,13 +693,13 @@ NB spacje są niezbędne - `::*->*` jest jednym leksemem.
      osi = map osi
     ~~~~
 
-* Uwaga: w ostatnim przykładzie `iso` ma inny typ po lewej, inny po prawej 
+* Uwaga: w ostatnim przykładzie `iso` ma inny typ po lewej, inny po prawej
 
 * Ćwiczenie: napisz jeszcze jakieś instancje klasy `Iso`
 
 
     ~~~~ {.haskell}
-    instance (Functor f, Iso a b) => Iso (f a) (f b) where 
+    instance (Functor f, Iso a b) => Iso (f a) (f b) where
     instance Iso (a->b->c) (b->a->c) where
     ~~~~
 
@@ -720,13 +720,13 @@ distinct.
 * an instance head must have the form C (T u1 ... uk), where T is a type constructor defined by a data or newtype declaration  and the ui are distinct type variables, and
 
 <!--
-*    each assertion in the context must have the form C' v, where v is one of the ui. 
+*    each assertion in the context must have the form C' v, where v is one of the ui.
 -->
 
 This prohibits instance declarations such as:
 
-  instance C (a,a) where ...  
-  instance C (Int,a) where ...  
+  instance C (a,a) where ...
+  instance C (Int,a) where ...
   instance C [[a]] where ...
 
 `instance Iso a a` nie spełnia tych warunków, ale wiadomo o jaką relację nam chodzi :)
@@ -738,12 +738,12 @@ Spróbujmy stworzyć klasę kolekcji, np.
 
 ~~~~ {.haskell}
 class Collection c where
-  insert :: e -> c -> c    
+  insert :: e -> c -> c
   member :: e -> c -> Bool
 
 instance Collection [a] where
      insert = (:)
-     member = elem  
+     member = elem
 ~~~~
 
 ~~~~
@@ -762,22 +762,22 @@ Dlaczego?
 
 ~~~~ {.haskell}
 class Collection c where
- insert :: e -> c -> c    
+ insert :: e -> c -> c
  member :: e -> c -> Bool
 ~~~~
 
 tłumaczy się (mniej więcej) do
 
 ~~~~
-data ColDic c = CD 
- { 
+data ColDic c = CD
+ {
  , insert :: forall e.e -> c -> c
  , member :: forall e.e -> c -> Bool
  }
 ~~~~
 
  ... nie o to nam chodziło.
-   
+
 ~~~~ {.haskell}
 instance Collection [a] where
    insert = (:)
@@ -787,7 +787,7 @@ instance Collection [a] where
 ~~~~
 -- (:) :: forall t. t -> [t] -> [t]
 ColList :: forall a. ColDic a
-ColList = \@ a -> CD { insert = (:) @ a, member = 
+ColList = \@ a -> CD { insert = (:) @ a, member =
 ~~~~
 
 # Problem z klasami wieloparametrowymi
@@ -806,7 +806,7 @@ class Collection c e where
 instance Eq a => Collection [a] a where
   insert  = (:)
   member = elem
-     
+
 ins2 x y c = insert y (insert x c)
 -- ins2 :: (Collection c e, Collection c e1) => e1 -> e -> c -> c
 
@@ -858,7 +858,7 @@ instance Collection [] where
 ale nie rozwiązuje to problemu np. z monadą stanu:
 
 ~~~~ {.haskell}
- class (Monad m) => MonadState s m | m -> s where 
+ class (Monad m) => MonadState s m | m -> s where
    get :: m s
    put :: s -> m ()
 ~~~~
@@ -870,18 +870,18 @@ typ stanu `s` nie jest tu parametrem konstruktora `m`.
 ~~~~ {.haskell}
 class Mul a b c | a b -> c where
   (*) :: a -> b -> c
-  
+
 newtype Vec a = Vec [a]
 instance Functor Vec where
   fmap f (Vec as) = Vec $ map f as
-  
+
 instance Mul a b c => Mul a (Vec b) (Vec c) where
   a * b = fmap (a*) b
-  
+
 f t x y = if t then  x * (Vec [y]) else y
 ~~~~
 
-Jakiego typu jest f? Niech x::a, y::b. 
+Jakiego typu jest f? Niech x::a, y::b.
 
 Wtedy typem wyniku jest b i musimy mieć instancję `Mul a (Vec b) b`
 
